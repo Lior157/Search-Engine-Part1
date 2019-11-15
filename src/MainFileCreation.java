@@ -51,7 +51,7 @@ public class MainFileCreation {
 
 
        final File folder = new File("D://מסמכים//לימודים//שנה ג//איחזור//testCorpus");
-        Path p = Paths.get("D://מסמכים//לימודים//שנה ג//איחזור//test5490");
+        Path p = Paths.get("D://מסמכים//לימודים//שנה ג//איחזור//test6490");
         ReadFile rf = new ReadFile(p ,folder);
         Thread[] threads = new Thread[8];
         for(int i=0 ; i< threads.length ;i++) {

@@ -35,8 +35,8 @@ public class parseAllDocs implements Runnable {
             } else {
                 boolean check = false ;
                 synchronized (this) {
-                    if (!filesExecuted.contains(fileEntry.toString())) {
-                        filesExecuted.add(fileEntry.toString());
+                    if (!filesExecuted.contains(fileEntry.toPath().toString())) {
+                        filesExecuted.add(fileEntry.toPath().toString());
                         check = true ;
                     }
                 }
