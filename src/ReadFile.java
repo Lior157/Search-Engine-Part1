@@ -18,12 +18,27 @@ public class ReadFile implements Runnable{
     private volatile Object lookIncrease;
 
     public ReadFile(Path pathData , final File folder) {
+        if (Files.exists(pathData)) {
+            // file exist
+            System.out.println("exist");
+            deleteDirectory(new File(pathData.toString()));
+        }
         new File(pathData.toString()).mkdirs();
         this.pathData = pathData;
         fileNumber=0;
         this.folder=folder;
         this.filesExecuted = new HashSet<>();
         lookIncrease = new Object();
+    }
+
+    private boolean deleteDirectory(File directoryToBeDeleted) {
+        File[] allContents = directoryToBeDeleted.listFiles();
+        if (allContents != null) {
+            for (File file : allContents) {
+                deleteDirectory(file);
+            }
+        }
+        return directoryToBeDeleted.delete();
     }
 
     public void listFilesForFolder(final File folder) {
@@ -71,6 +86,7 @@ public class ReadFile implements Runnable{
         byte data[] = s.getBytes();
         String st ;
         synchronized (lookIncrease) {
+            fileNumber++;
             new File(pathData.toString() + "//@" + fileNumber).mkdirs();
             st = this.pathData.toString() + "//@" + fileNumber + "//" + filename;
         }
@@ -79,9 +95,6 @@ public class ReadFile implements Runnable{
         try (OutputStream out = new BufferedOutputStream(
                 Files.newOutputStream(p, CREATE))) {
             out.write(data, 0, data.length);
-            synchronized (lookIncrease) {
-                fileNumber++;
-            }
         } catch (IOException x) {
             System.err.println(x);
         }

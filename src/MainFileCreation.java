@@ -1,5 +1,6 @@
 import java.io.File;
 import java.math.RoundingMode;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
@@ -51,9 +52,15 @@ public class MainFileCreation {
 
 
        final File folder = new File("D://מסמכים//לימודים//שנה ג//איחזור//testCorpus");
-        Path p = Paths.get("D://מסמכים//לימודים//שנה ג//איחזור//test6490");
+        Path p = Paths.get("D://מסמכים//לימודים//שנה ג//איחזור//test7744");
         ReadFile rf = new ReadFile(p ,folder);
-        Thread[] threads = new Thread[8];
+
+
+
+
+        int cores = Runtime.getRuntime().availableProcessors();
+        Thread[] threads = new Thread[cores];
+        System.out.println(cores);
         for(int i=0 ; i< threads.length ;i++) {
             threads[i] = new Thread(rf);
             threads[i].start();
@@ -64,7 +71,7 @@ public class MainFileCreation {
             }
             //// 2.0
             parseAllDocs pd =  new parseAllDocs(p);
-            Thread[] threads2 = new Thread[8];
+            Thread[] threads2 = new Thread[cores];
             for(int i=0 ; i< threads2.length ;i++) {
                 threads2[i] = new Thread(pd);
                 threads2[i].start();
@@ -80,5 +87,7 @@ public class MainFileCreation {
 
 
     }
+
+
 
 }

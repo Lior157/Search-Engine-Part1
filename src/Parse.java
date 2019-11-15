@@ -32,7 +32,7 @@ public class Parse {
             if(str2[i].startsWith("(")||str2[i].startsWith("*"))
                 str2[i]=str2[i].substring(1);
             while(str2[i].endsWith("!")||str2[i].endsWith("?")||str2[i].endsWith(".")||str2[i].endsWith(",")||str2[i].endsWith(":")||str2[i].endsWith(";")||str2[i].endsWith(")")||str2[i].endsWith("*")||str2[i].endsWith("-"))
-                str2[i]=str2[i].substring(0,str2[i].length()-2); // changed from -1
+                str2[i]=str2[i].substring(0,str2[i].length()-1); // changed from -1
             if(str2[i].length()==0)
                 continue;
             this.text.add(str2[i]);
@@ -59,7 +59,7 @@ public class Parse {
         }
         for (String key:DATA.keySet()) {
            // System.out.println(key);
-            System.out.println(DATA.get(key));
+          //  System.out.println(DATA.get(key));
         }
         return DATA;
     }
@@ -80,7 +80,7 @@ public class Parse {
         }
         catch (Exception e)
         {
-            System.err.format("Exception occurred trying to read '%s'.", "StopWords.txt");
+          //  System.err.format("Exception occurred trying to read '%s'.", "StopWords.txt");
             e.printStackTrace();
         }
     }
@@ -94,7 +94,7 @@ public class Parse {
             if(stemmer.getResultBuffer()[i] == 0) break;
             ans.append(stemmer.getResultBuffer()[i]);
         }
-        System.out.println(ans+" "+word);
+   //     System.out.println(ans+" "+word);
         return ans.toString();
     }
     private void AddToData(String word,boolean number){
@@ -146,6 +146,7 @@ public class Parse {
         return null;
     }
     private String IsRange(int indexDoc){
+      //  System.out.println("c: "+getFromText(indexDoc));
         String[]words=getFromText(indexDoc).split("-");
         String number=null;
         if (words.length==1)
@@ -189,6 +190,7 @@ public class Parse {
             i++;
         }
 
+        if(number.toString().length() == 0) return null;
         return editNumberKMB(index, number.toString());
     }
 
@@ -215,6 +217,7 @@ public class Parse {
             }
             i++;
         }
+        if(i==0) return null;
         boolean endsWithBollean = false;
         if(i!=term.length()) {
 
@@ -263,10 +266,10 @@ public class Parse {
             String str = getFromText(index+1)+" "+getFromText(index+2)+" "+getFromText(index+3);
             for (int i=0 ; i<ls.length ; i++){
                 if(str.startsWith(ls[i])){
-                    System.out.println(ls[i]);
-                    System.out.println(str);
+                 //   System.out.println(ls[i]);
+                 //   System.out.println(str);
                     indexDoc=indexDoc+ls[i].split(" ").length ;
-                    System.out.println(indexDoc+"check");
+                 //   System.out.println(indexDoc+"check");
                     isPrice=true;
                     break;
                 }
@@ -278,9 +281,9 @@ public class Parse {
         }
 
         if(! newTerm.contains("/")) {
-            System.out.println(newTerm);
+          //  System.out.println(newTerm);
             if(newTerm.equals("")){
-                System.out.println("empty term why????");
+            //    System.out.println("empty term why????");
                 return null;
             }
             Double newNumber = Double.parseDouble(newTerm);
@@ -393,6 +396,7 @@ public class Parse {
         if(str!=null){
             index++ ;
         }
+     //   System.out.println("n: "+Number);
         Double newNumber = Double.parseDouble(Number) ;
 
         if(getFromText(index+1).equals("Thousand") ){
@@ -433,9 +437,10 @@ public class Parse {
     }
 
     private String getFromText(int i){
-        if(i>=text.size()){
+        if(i >= text.size()){
             return " ";
         }
+        if(text.get(i) == null) return " ";
         return text.get(i);
     }
 }

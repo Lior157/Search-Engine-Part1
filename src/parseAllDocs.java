@@ -24,7 +24,9 @@ public class parseAllDocs implements Runnable {
         lookIncrease = new Object();
     }
 
+
     public void startParseVoc(){
+
         startParseVoc(new File(pathData.toString()));
       //  sumUpData();
     }
@@ -62,6 +64,7 @@ public class parseAllDocs implements Runnable {
                     text.delete(0, text.length());
                 }else if(line.startsWith("<TEXT>")){
                     text.delete(0, text.length());
+                    System.out.println("text :"+text);
                 }else{
                     text=text.append("\n");
                 }
