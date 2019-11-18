@@ -54,35 +54,25 @@ public class MainFileCreation {
        final File folder = new File("D://מסמכים//לימודים//שנה ג//איחזור//corpus");
         Path p = Paths.get("D://מסמכים//לימודים//שנה ג//איחזור//test894");
         ReadFile rf = new ReadFile(p ,folder);
-       // rf.run();
+        rf.run();
 //
-        int cores = Runtime.getRuntime().availableProcessors();
-        Thread[] threads = new Thread[cores];
-        System.out.println(cores);
-        for(int i=0 ; i< threads.length ;i++) {
-            threads[i] = new Thread(rf);
-            threads[i].start();
-        }
-        try {
-            for (int i = 0; i < threads.length; i++) {
-                threads[i].join();
-            }
-        }catch (Exception e) {
-        }
-            //// 2.0
-//            parseAllDocs pd =  new parseAllDocs(p);
-//            Thread[] threads2 = new Thread[cores];
-//            for(int i=0 ; i< threads2.length ;i++) {
-//                threads2[i] = new Thread(pd);
-//                threads2[i].start();
-//            }
-//            for (int i = 0; i < threads2.length; i++) {
-//                threads2[i].join();
-//            }
-//            pd.sumUpData();
-//        }catch (Exception e){
-//
+//        int cores = Runtime.getRuntime().availableProcessors();
+//        Thread[] threads = new Thread[cores];
+//        System.out.println(cores);
+//        for(int i=0 ; i< threads.length ;i++) {
+//            threads[i] = new Thread(rf);
+//            threads[i].start();
 //        }
+//        try {
+//            for (int i = 0; i < threads.length; i++) {
+//                threads[i].join();
+//            }
+//        }catch (Exception e) {
+//        }
+
+
+
+
 
 
 

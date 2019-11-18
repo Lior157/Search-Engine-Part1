@@ -84,15 +84,15 @@ public class ReadFile implements Runnable{
             fileMeta_data = new HashMap<>();
             for (Element doc:
                  All_docs) {
-
+                Integer local_file_num;
                 synchronized (lookIncrease) {
+                    local_file_num = fileNumber;
                     fileNumber++;
                 }
                 Elements title =  doc.getElementsByTag("TI");
                 Elements date =  doc.getElementsByTag("DATE1");
                 Elements docno =  doc.getElementsByTag("DOCNO");
-                fileMeta_data.put(fileNumber , "="+title.text()+"="+date.text()+"="+docno.text());
-
+                fileMeta_data.put(local_file_num , "="+title.text()+"="+date.text()+"="+docno.text());
 
                 Map<String,Integer> mp = parser.parseIt(doc.text());
                 Iterator<String> it = mp.keySet().iterator();
@@ -102,13 +102,13 @@ public class ReadFile implements Runnable{
                         Map<Integer,Integer>  l= new HashMap<>();
                         Voc.put(s , l);
                     }
-                    Voc.get(s).put(fileNumber , mp.get(s));
+                    Voc.get(s).put(local_file_num , mp.get(s));
                 }
                 fileIteration++;
                 if(fileIteration>1000){
                     fileIteration = 0 ;
-                    writeFile(fileMeta_data.toString() , fileNumber.toString());
-                    writeFile(Voc.toString() , fileNumber.toString()+"Voc");
+                    writeFile(fileMeta_data.toString() , local_file_num.toString());
+                    writeFile(Voc.toString() , local_file_num.toString()+"Voc");
                     fileMeta_data = new HashMap<>();
                     Voc = new HashMap<>();
                 }
