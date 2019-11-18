@@ -1,9 +1,15 @@
+import javafx.util.Pair;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
+
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
 
 import static java.nio.file.StandardOpenOption.APPEND;
 import static java.nio.file.StandardOpenOption.CREATE;
@@ -16,6 +22,9 @@ public class ReadFile implements Runnable{
     private File folder ;
     private volatile HashSet<String> filesExecuted ;
     private volatile Object lookIncrease;
+    private Map<String , Map<Integer,Integer>> Voc ;
+    private Map<Integer , String> fileMeta_data;
+    private int fileIteration ;
 
     public ReadFile(Path pathData , final File folder) {
         if (Files.exists(pathData)) {
@@ -23,6 +32,7 @@ public class ReadFile implements Runnable{
             System.out.println("exist");
             deleteDirectory(new File(pathData.toString()));
         }
+
         new File(pathData.toString()).mkdirs();
         this.pathData = pathData;
         fileNumber=0;
@@ -62,33 +72,72 @@ public class ReadFile implements Runnable{
     }
 
     public void readFile(Path file ,String fileName) {
-        try (InputStream in = Files.newInputStream(file);
-             BufferedReader reader =
-                     new BufferedReader(new InputStreamReader(in))) {
-            String line = null;
-            String text="" ;
-            while ((line = reader.readLine()) != null) {
-               // System.out.println(line);
-                text=text+line;
-                if(line.startsWith("</DOC>")){
-                    writeFile(text ,fileName);
-                    text="";
-                }else{
-                    text=text+"\n";
+//        try (InputStream in = Files.newInputStream(file);
+//             BufferedReader reader =
+//                     new BufferedReader(new InputStreamReader(in))) {
+//            String line = null;
+//            String text="" ;
+        Voc = new HashMap<>();
+        try {
+                  Document document = Jsoup.parse(new String(Files.readAllBytes(file)));
+                  Elements All_docs =  document.getElementsByTag("DOC");
+            fileMeta_data = new HashMap<>();
+            for (Element doc:
+                 All_docs) {
+
+                synchronized (lookIncrease) {
+                    fileNumber++;
+                }
+                Elements title =  doc.getElementsByTag("TI");
+                Elements date =  doc.getElementsByTag("DATE1");
+                Elements docno =  doc.getElementsByTag("DOCNO");
+                fileMeta_data.put(fileNumber , "="+title.text()+"="+date.text()+"="+docno.text());
+
+
+                Map<String,Integer> mp = parser.parseIt(doc.text());
+                Iterator<String> it = mp.keySet().iterator();
+                while (it.hasNext()){
+                    String s = it.next();
+                    if(Voc.get(s)==null){
+                        Map<Integer,Integer>  l= new HashMap<>();
+                        Voc.put(s , l);
+                    }
+                    Voc.get(s).put(fileNumber , mp.get(s));
+                }
+                fileIteration++;
+                if(fileIteration>1000){
+                    fileIteration = 0 ;
+                    writeFile(fileMeta_data.toString() , fileNumber.toString());
+                    writeFile(Voc.toString() , fileNumber.toString()+"Voc");
+                    fileMeta_data = new HashMap<>();
+                    Voc = new HashMap<>();
                 }
             }
-        } catch (IOException x) {
+
+        }catch (IOException x) {
             System.err.println(x);
         }
+//            while ((line = reader.readLine()) != null) {
+//               // System.out.println(line);
+//                text=text+line;
+//                if(line.startsWith("</DOC>")){
+//                    writeFile(text ,fileName);
+//                    text="";
+//                }else{
+//                    text=text+"\n";
+//                }
+//            }
+//        } catch (IOException x) {
+//            System.err.println(x);
+//        }
     }
 
     public void writeFile(String s , String filename){
         byte data[] = s.getBytes();
         String st ;
         synchronized (lookIncrease) {
-            fileNumber++;
-            new File(pathData.toString() + "//@" + fileNumber).mkdirs();
-            st = this.pathData.toString() + "//@" + fileNumber + "//" + filename;
+         //   new File(pathData.toString() + "//@" + fileNumber).mkdirs();
+            st = this.pathData.toString() + "//@"  + filename;
         }
         System.out.println(st);
         Path p = Paths.get(st);
@@ -102,6 +151,7 @@ public class ReadFile implements Runnable{
 
     @Override
     public void run() {
+        parser = new Parse();
         listFilesForFolder(folder);
     }
 }

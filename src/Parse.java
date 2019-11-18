@@ -52,6 +52,7 @@ public class Parse {
             }
             if(checkIfTermHasConnectionToNumber(indexDoc)!=null){
                 str=getNumber(indexDoc);
+                if(str == null) continue;
                 AddToData(str,true);
                 continue;
             }
@@ -181,7 +182,7 @@ public class Parse {
                 if(c == '.') {
                     counter++;
                 }
-                if(c  == ',' && counter>0){
+                if(counter>1){ // changed from c  == ',' || counter>0
                     return null;
                 }
             }else{
@@ -203,6 +204,7 @@ public class Parse {
             term = term.substring(1) ;
         }
         int i = 0 ;
+        int y = 0 ;
         StringBuilder number = new StringBuilder();
         for (char c:
                 term.toCharArray()) {
@@ -210,6 +212,13 @@ public class Parse {
                 //    System.out.println(c);
                 if(c != ',') {
                     number.append(c);
+                }
+                if(c == '.') {
+                    y++;
+                    if(y>1){
+                        return null;
+                    }
+                    break;
                 }
             }else{
                 //    System.out.println("foult :" + c);
@@ -251,6 +260,7 @@ public class Parse {
     private String IsPrice(int index){
         String word =getFromText(index);
         String newTerm=checkIfTermHasConnectionToNumber(index);
+        if(newTerm == null) return null;
         boolean isPrice = false;
         if(word.startsWith("$")){
             isPrice = true;
