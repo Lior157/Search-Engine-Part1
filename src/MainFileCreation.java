@@ -41,14 +41,6 @@ public class MainFileCreation {
  ///////////////////       1.0
 
 
-//        final File folder = new File("D://מסמכים//לימודים//שנה ג//איחזור//corpus");
-//        Path p = Paths.get("D://מסמכים//לימודים//שנה ג//איחזור//test5");
-//        ReadFile rf = new ReadFile(p ,folder );
-//        rf.listFilesForFolder(folder);
-//        //// 2.0
-//        parseAllDocs pd= new parseAllDocs(p);
-//        pd.startParseVoc();
-
 
 
        final File folder = new File("D://מסמכים//לימודים//שנה ג//איחזור//corpus");

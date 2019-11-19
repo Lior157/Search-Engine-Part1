@@ -19,17 +19,13 @@ import static java.nio.file.StandardOpenOption.CREATE;
 public class ReadFile implements Runnable{
 
     private Path pathData;
-    private static volatile Integer fileNumber = 1 ;
-    private Parse parser;
-    private File folder ;
 
+    private File folder ;
     private static volatile ConcurrentHashMap<String,Integer> filesExecuted = new ConcurrentHashMap<>();
-    private static volatile Object lookIncrease  = new Object();
     private static volatile Object lookClean  = new Object();
-    private Map<String , Map<Integer,Integer>> Voc ;
-    private Map<Integer , String> fileMeta_data;
     private static volatile boolean cleanfile = true;
-    private int fileIteration ;
+    private Indexer ind ;
+
 
     public ReadFile(Path pathData , final File folder) {
             synchronized (lookClean) {
@@ -81,47 +77,11 @@ public class ReadFile implements Runnable{
 
     public void readFile(Path file ,String fileName) {
 
-        Voc = new HashMap<>();
+
         try {
                   Document document = Jsoup.parse(new String(Files.readAllBytes(file)));
                   Elements All_docs =  document.getElementsByTag("DOC");
-            fileMeta_data = new HashMap<>();
-            for (Element doc:
-                 All_docs) {
-                Integer local_file_num;
-                synchronized (lookIncrease) {
-                    local_file_num = fileNumber;
-                    fileNumber++;
-                }
-                Elements title =  doc.getElementsByTag("TI");
-                Elements date =  doc.getElementsByTag("DATE1");
-                Elements docno =  doc.getElementsByTag("DOCNO");
-
-
-                Map<String,Integer> mp = parser.parseIt(doc.text());
-                int max_tf = 0 ;
-                String[] it = mp.keySet().toArray(new String[mp.size()]);
-                for (String s:
-                        it) {
-                    if(Voc.get(s)==null){
-                        Map<Integer,Integer>  l= new HashMap<>();
-                        Voc.put(s , l);
-                    }
-                    Voc.get(s).put(local_file_num , mp.get(s));
-                    if(mp.get(s)>max_tf){
-                        max_tf=mp.get(s);
-                    }
-                }
-                fileMeta_data.put(local_file_num , "|"+title.text()+"|"+date.text()+"|"+docno.text()+"|max_tf|"+max_tf +"|qw|"+mp.size());
-                fileIteration++;
-                if(fileIteration>=1000){
-                    fileIteration = 0 ;
-                    writeFile(fileMeta_data.toString() , local_file_num.toString());
-                    writeFile(Voc.toString() , local_file_num.toString()+"Voc");
-                    fileMeta_data = new HashMap<>();
-                    Voc = new HashMap<>();
-                }
-            }
+                  ind.WriteData(All_docs , false);
 
         }catch (IOException x) {
             System.err.println(x);
@@ -141,26 +101,12 @@ public class ReadFile implements Runnable{
 //        }
     }
 
-    public void writeFile(String s , String filename){
-        byte data[] = s.getBytes();
-        String st ;
-        synchronized (lookIncrease) {
-         //   new File(pathData.toString() + "//@" + fileNumber).mkdirs();
-            st = this.pathData.toString() + "//@"  + filename;
-        }
-        System.out.println(st);
-        Path p = Paths.get(st);
-        try (OutputStream out = new BufferedOutputStream(
-                Files.newOutputStream(p, CREATE))) {
-            out.write(data, 0, data.length);
-        } catch (IOException x) {
-            System.err.println(x);
-        }
-    }
+
 
     @Override
     public void run() {
-        parser = new Parse();
+        this.ind = new Indexer(pathData);
         listFilesForFolder(folder);
+        ind.WriteData(null , true);
     }
 }
