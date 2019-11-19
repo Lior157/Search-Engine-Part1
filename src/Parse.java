@@ -4,41 +4,45 @@ import java.io.FileReader;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.*;
+import java.util.regex.Pattern;
 
 public class Parse {
     private Map<String,Integer> DATA ;
     private ArrayList<String> text; //List of document words without stop words or blank spaces.
     private HashSet<String> stopWords;
     private int indexDoc ;
-    public Parse(){
+    private boolean stem;
+    private HashSet<String> endsOrStarts;
 
+
+    public Parse(){
+        this.stem=false;
+        this.text = new ArrayList<String>();
+        add_stopWords();
+        endsOrStarts = new HashSet<String>(Arrays.asList("(", ")", ".","*","!","?",".",",",":",";","-","]","[",",","\""));
     }
 
     public Map<String,Integer> parseIt(String text){
 
         /*run on each file text - remove stop words ,parse it(and increases number of appearances), stems it , data analysis(the term with the most appearances,number of all terms,*/
-        String[] str2 = text.split("[ \"\\t?!\\r?\\n]+");
-        this.text = new ArrayList<String>();
+        String[] str2 = text.split("[:\\s\\r?\\n]+");
+        System.out.println("length-"+str2.length);
         DATA = new Hashtable<>();
-        add_stopWords();
         for(int i=0 ; i<str2.length ;i++) {
+            if(stopWords.contains(str2[i]))
+                continue;
             if(str2[i].equals("U.S.")) {
                 this.text.add(str2[i]);
                 continue;
             }
-            if(stopWords.contains(str2[i]))
-                continue;
-            str2[i]=StemWord(str2[i]);
-            if(str2[i].startsWith("(")||str2[i].startsWith("*"))
-                str2[i]=str2[i].substring(1);
-            while(str2[i].endsWith("!")||str2[i].endsWith("?")||str2[i].endsWith(".")||str2[i].endsWith(",")||str2[i].endsWith(":")||str2[i].endsWith(";")||str2[i].endsWith(")")||str2[i].endsWith("*")||str2[i].endsWith("-"))
-                str2[i]=str2[i].substring(0,str2[i].length()-1); // changed from -1
+            str2[i]=CleanWord(str2[i]);
             if(str2[i].length()==0)
                 continue;
-            this.text.add(str2[i]);
+            if(!Seperate(str2[i]))
+                this.text.add(str2[i]);
         }
 
-        for(indexDoc=0 ; indexDoc< str2.length ;indexDoc++){
+        for(indexDoc=0 ; indexDoc< text.length() ;indexDoc++){
             String str;
             str=IsRange(indexDoc);
             if(str!=null){
@@ -56,16 +60,46 @@ public class Parse {
                 AddToData(str,true);
                 continue;
             }
-            AddToData(getFromText(indexDoc),false);
+            if(stem)
+                AddToData(StemWord(getFromText(indexDoc)),false);
+            else
+                AddToData(getFromText(indexDoc),false);
         }
         for (String key:DATA.keySet()) {
-           // System.out.println(key);
-          //  System.out.println(DATA.get(key));
+            System.out.println(key);
+            System.out.println(DATA.get(key));
         }
         return DATA;
     }
-    private void TextToTerms(String text){
 
+    private String CleanWord(String word){
+        if(!word.contains("(703)"))
+        while(endsOrStarts.contains(String.valueOf(word.charAt(0))))
+            word=word.substring(1);
+        while(word.length()!=0 && endsOrStarts.contains(String.valueOf(word.charAt(word.length()-1))))
+            word=word.substring(0,word.length()-1);
+        return word;
+    }
+
+    private boolean Seperate(String word){
+        if(!word.contains("--"))
+            return false;
+        int index=0;
+        String first="";
+        String second="";
+        for (int i = 0; i <word.length() ; i++) {
+            first += word.charAt(i);
+            if (word.charAt(i) == '-' && word.charAt(i + 1) == '-') {
+                index = i;
+                break;
+            }
+        }
+        for (int i = index+2; i <word.length() ; i++) {
+            second+=word.charAt(i);
+        }
+        this.text.add(first);
+        this.text.add(second);
+        return true;
     }
     private void add_stopWords(){
         stopWords=new HashSet<>();
@@ -90,14 +124,17 @@ public class Parse {
         Stemmer stemmer=new Stemmer();
         stemmer.add(word.toCharArray(),word.length());
         stemmer.stem();
-        StringBuilder ans = new StringBuilder(); // fixed
-        for (int i = 0; i <stemmer.getResultBuffer().length; i++) {
-            if(stemmer.getResultBuffer()[i] == 0) break;
-            ans.append(stemmer.getResultBuffer()[i]);
-        }
-   //     System.out.println(ans+" "+word);
-        return ans.toString();
+        return stemmer.toString();
     }
+
+    public void TurnOnStem(){
+        stem=true;
+    }
+
+    public void TurnOffStem(){
+        stem=false;
+    }
+
     private void AddToData(String word,boolean number){
         if(word.equals(" ")|| word.length()==0){
             return;
@@ -132,15 +169,15 @@ public class Parse {
     private String getNumber(int index) {
         String str;
 
-        str = this.IsPercent(indexDoc);
+        str = this.IsPercent(index);
         if (str != null)
             return str;
 
-        str = this.IsPrice(indexDoc);
+        str = this.IsPrice(index);
         if (str != null)
             return str;
 
-        str = this.IsNumber(indexDoc);
+        str = this.IsNumber(index);
         if (str != null)
             return str;
 
