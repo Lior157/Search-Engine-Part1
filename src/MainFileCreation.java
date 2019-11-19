@@ -53,22 +53,23 @@ public class MainFileCreation {
 
        final File folder = new File("D://מסמכים//לימודים//שנה ג//איחזור//corpus");
         Path p = Paths.get("D://מסמכים//לימודים//שנה ג//איחזור//test894");
-        ReadFile rf = new ReadFile(p ,folder);
-        rf.run();
-//
-//        int cores = Runtime.getRuntime().availableProcessors();
-//        Thread[] threads = new Thread[cores];
-//        System.out.println(cores);
-//        for(int i=0 ; i< threads.length ;i++) {
-//            threads[i] = new Thread(rf);
-//            threads[i].start();
-//        }
-//        try {
-//            for (int i = 0; i < threads.length; i++) {
-//                threads[i].join();
-//            }
-//        }catch (Exception e) {
-//        }
+//        ReadFile rf = new ReadFile(p ,folder);
+//        rf.run();
+
+        int cores = Runtime.getRuntime().availableProcessors();
+        Thread[] threads = new Thread[cores];
+        System.out.println(cores);
+        for(int i=0 ; i< threads.length ;i++) {
+            threads[i] = new Thread(new ReadFile(p ,folder));
+            threads[i].start();
+        }
+        try {
+            for (int i = 0; i < threads.length; i++) {
+                threads[i].join();
+            }
+        }catch (Exception e) {
+        }
+
 
 
 

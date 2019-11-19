@@ -11,7 +11,7 @@ public class Parse {
     private HashSet<String> stopWords;
     private int indexDoc ;
     public Parse(){
-
+//System.out.println("created");
     }
 
     public Map<String,Integer> parseIt(String text){
@@ -58,10 +58,10 @@ public class Parse {
             }
             AddToData(getFromText(indexDoc),false);
         }
-        for (String key:DATA.keySet()) {
-           // System.out.println(key);
-          //  System.out.println(DATA.get(key));
-        }
+//        for (String key:DATA.keySet()) {
+//           // System.out.println(key);
+//          //  System.out.println(DATA.get(key));
+//        }
         return DATA;
     }
     private void TextToTerms(String text){

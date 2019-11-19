@@ -1,5 +1,6 @@
 import javax.swing.text.Document;
 import java.io.*;
+import java.lang.reflect.Array;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -101,11 +102,10 @@ public class parseAllDocs implements Runnable {
         StringBuilder Vtext = new StringBuilder();
         try {
             Map<String, Integer> l = parser.parseIt(text);
-            Iterator<String> it = l.keySet().iterator();
-
-            while (it.hasNext()) {
+            String[] it = (String[]) l.keySet().toArray();
+            for (String key:
+                 it) {
                 synchronized (lookIncrease) {
-                    String key = it.next();
                     Vtext.append(key + " &->& " + l.get(key) + "\n");
                     Integer sum = l.get(key);
                     if (totalVoc.containsKey(key)) {
