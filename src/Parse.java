@@ -1,3 +1,4 @@
+import javax.swing.*;
 import javax.xml.crypto.Data;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -73,12 +74,17 @@ public class Parse {
     }
 
     private String CleanWord(String word){
-        if(!word.contains("(703)"))
-        while(endsOrStarts.contains(String.valueOf(word.charAt(0))))
-            word=word.substring(1);
         while(word.length()!=0 && endsOrStarts.contains(String.valueOf(word.charAt(word.length()-1))))
             word=word.substring(0,word.length()-1);
-        return word;
+        if(!word.contains("(703)")) {
+            while ((word.length() != 0 && endsOrStarts.contains(String.valueOf(word.charAt(0)))))
+                word = word.substring(1);
+            return word;
+        }
+        else
+            AddToData(word,false);
+        return "";
+
     }
 
     private boolean Seperate(String word){
