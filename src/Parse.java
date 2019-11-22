@@ -14,6 +14,7 @@ public class Parse {
     private int indexDoc ;
     private boolean stem;
     private HashSet<String> endsOrStarts;
+    public Map<String,Integer> entities;
 
 
     public Parse(){
@@ -28,10 +29,9 @@ public class Parse {
         /*run on each file text - remove stop words ,parse it(and increases number of appearances), stems it , data analysis(the term with the most appearances,number of all terms,*/
         String[] str2 = text.split("[:\\s\\r?\\n]+");
         System.out.println("length-"+str2.length);
-        DATA = new Hashtable<>();
+        DATA = new HashMap<>();
+        entities=new HashMap<>();
         for(int i=0 ; i<str2.length ;i++) {
-            if(stopWords.contains(str2[i]))
-                continue;
             if(str2[i].equals("U.S.")) {
                 this.text.add(str2[i]);
                 continue;
@@ -45,6 +45,14 @@ public class Parse {
 
         for(indexDoc=0 ; indexDoc< text.length() ;indexDoc++){
             String str;
+            str=IsEntity(indexDoc);
+            if(str!=null){
+                if(entities.get(str)!=null)
+                    entities.put(str,entities.get(str)+1);
+                else
+                    entities.put(str,1);
+                continue;
+            }
             str=IsRange(indexDoc);
             if(str!=null){
                 AddToData(str,false);
@@ -61,6 +69,8 @@ public class Parse {
                 AddToData(str,true);
                 continue;
             }
+            if(stopWords.contains(getFromText(indexDoc)))
+                continue;
             if(stem)
                 AddToData(StemWord(getFromText(indexDoc)),false);
             else
@@ -94,11 +104,11 @@ public class Parse {
         String first="";
         String second="";
         for (int i = 0; i <word.length() ; i++) {
-            first += word.charAt(i);
             if (word.charAt(i) == '-' && word.charAt(i + 1) == '-') {
                 index = i;
                 break;
             }
+            first += word.charAt(i);
         }
         for (int i = index+2; i <word.length() ; i++) {
             second+=word.charAt(i);
@@ -189,14 +199,35 @@ public class Parse {
 
         return null;
     }
+
+    private String IsEntity(int indexDoc){
+        String entity="";
+        int size=1;
+        if(Character.isUpperCase(getFromText(indexDoc).charAt(0))) {
+            entity += getFromText(indexDoc);
+            AddToData(entity,false);
+        }
+        else
+            return null;
+        for (int i = indexDoc+1;Character.isUpperCase(getFromText(i).charAt(0)) ; i++) {
+            entity = entity + " " + getFromText(i);
+            size=i-indexDoc+1;
+            AddToData(getFromText(i),false);
+        }
+        if(size==1)
+            return null;
+        this.indexDoc+=size-1;
+        return entity;
+    }
+
     private String IsRange(int indexDoc){
       //  System.out.println("c: "+getFromText(indexDoc));
         String[]words=getFromText(indexDoc).split("-");
         String number=null;
         if (words.length==1)
             return null;
-        else if(words.length==3)
-            return words[0]+"-"+words[1]+"-"+words[2];
+        else if(words.length>=3)
+            return getFromText(indexDoc);
         else if(words.length==2){
             text.add(indexDoc,words[0]);
             text.add(indexDoc+1,words[1]);
