@@ -19,7 +19,6 @@ public class Parse {
 
     public Parse(){
         this.stem=false;
-        this.text = new ArrayList<String>();
         add_stopWords();
         endsOrStarts = new HashSet<String>(Arrays.asList("(", ")", ".","*","!","?",".",",",":",";","-","]","[",",","\""));
     }
@@ -31,6 +30,7 @@ public class Parse {
         System.out.println("length-"+str2.length);
         DATA = new HashMap<>();
         entities=new HashMap<>();
+        this.text = new ArrayList<String>();
         for(int i=0 ; i<str2.length ;i++) {
             String checkEntity=null;
             if(str2[i].equals("U.S.")) {
