@@ -32,18 +32,16 @@ public class Parse {
         DATA = new HashMap<>();
         entities=new HashMap<>();
         for(int i=0 ; i<str2.length ;i++) {
+            String checkEntity=null;
             if(str2[i].equals("U.S.")) {
                 this.text.add(str2[i]);
                 continue;
             }
-            str2[i]=CleanWord(str2[i]);
-            if(str2[i].length()==0)
-                continue;
             if(!Seperate(str2[i]))
                 this.text.add(str2[i]);
         }
 
-        for(indexDoc=0 ; indexDoc< text.length() ;indexDoc++){
+        for(indexDoc=0 ; indexDoc< this.text.size() ;indexDoc++){
             String str;
             str=IsEntity(indexDoc);
             if(str!=null){
@@ -53,6 +51,9 @@ public class Parse {
                     entities.put(str,1);
                 continue;
             }
+            this.text.set(indexDoc,CleanWord(getFromText(indexDoc)));
+            if(this.text.get(indexDoc).length()==0)
+                continue;
             str=IsRange(indexDoc);
             if(str!=null){
                 AddToData(str,false);
@@ -76,10 +77,7 @@ public class Parse {
             else
                 AddToData(getFromText(indexDoc),false);
         }
-        for (String key:DATA.keySet()) {
-            System.out.println(key);
-            System.out.println(DATA.get(key));
-        }
+        System.out.println(DATA);
         return DATA;
     }
 
@@ -113,7 +111,9 @@ public class Parse {
         for (int i = index+2; i <word.length() ; i++) {
             second+=word.charAt(i);
         }
+        if(first.length()>0)
         this.text.add(first);
+        if(second.length()>0)
         this.text.add(second);
         return true;
     }
@@ -202,9 +202,15 @@ public class Parse {
 
     private String IsEntity(int indexDoc){
         String entity="";
+        String word=getFromText(indexDoc);
         int size=1;
-        if(Character.isUpperCase(getFromText(indexDoc).charAt(0))) {
-            entity += getFromText(indexDoc);
+        if(Character.isUpperCase(word.charAt(0))) {
+            entity += word;
+            if(endsOrStarts.contains(String.valueOf(entity.charAt(entity.length()-1)))){
+                entity=CleanWord(entity);
+                AddToData(entity,false);
+                return entity;
+            }
             AddToData(entity,false);
         }
         else
@@ -212,10 +218,16 @@ public class Parse {
         for (int i = indexDoc+1;Character.isUpperCase(getFromText(i).charAt(0)) ; i++) {
             entity = entity + " " + getFromText(i);
             size=i-indexDoc+1;
+            if(endsOrStarts.contains(String.valueOf(entity.charAt(entity.length()-1)))){
+                entity=CleanWord(entity);
+                AddToData(CleanWord(getFromText(i)),false);
+                this.indexDoc+=size-1;
+                return entity;
+            }
             AddToData(getFromText(i),false);
         }
         if(size==1)
-            return null;
+            return entity;
         this.indexDoc+=size-1;
         return entity;
     }

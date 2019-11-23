@@ -6,10 +6,12 @@ public class Main {
 
     public static void main(String[] args) {
 
-        String text= "DIVISION ANALYSIS TEAM, (703)-733-6534.) \n" +
-                "<DOCNO> FBIS3-4 </DOCNO>\n" +
-                "Article Type:FBIS \n" +
-                "Document Type:FOREIGN MEDIA NOTE--FB PN 94-029--ALGERIA words someone's Let It Be s Alton John ";
+        String text= "POLITICIANS,  PARTY PREFERENCES \n" +
+                "\n" +
+                "   Summary:  Newspapers in good good good good the Former good Yugoslav Republic of \n" +
+
+                "\n" +
+                "ELAG/25 February/POLCHF/EED/DEW 28/2023Z FEB";
 
         Parse test=new Parse();
         test.parseIt(text);
