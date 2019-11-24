@@ -1,15 +1,18 @@
+import com.sun.scenario.effect.Merge;
+import javafx.util.Pair;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import java.io.BufferedOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import static java.nio.file.StandardOpenOption.APPEND;
 import static java.nio.file.StandardOpenOption.CREATE;
@@ -21,10 +24,14 @@ public class Indexer {
     private static volatile Object lookIncrease  = new Object();
     private static volatile Integer fileNumber = 1 ;
     private Parse parser;
-    private Path pathData ;
-    private LinkedList<String>[] AB_words;
+    private  static volatile Path pathData ;
+    private LinkedList<Pair<String,String>>[] AB_words;
     private static volatile Object[] AB_wordsLook = clearLookArray();
     private static volatile Object lookWriteDocsInformationFile = new Object();
+    private static volatile Integer writingId = 1 ;
+    private static volatile Object lookIncreaseWritingId  = new Object();
+    private static volatile Path[] pathsTemporaryFiles;
+    private static volatile boolean  pathesTemporaryFilesExist = false;
 
     public Indexer(Path path){
         parser =new Parse();
@@ -34,6 +41,24 @@ public class Indexer {
         clearLinkedListArray();
         fileMeta_data = new LinkedList<>();
         Voc = new HashMap<>();
+    }
+
+    private Path[] PathesTemporaryFiles(){
+        Path[] pathes  = new Path[27];
+        String st;
+        new File("TemporaryFiles").mkdirs();
+    //    System.out.println("e: ");
+        for (int i=0 ; i<27 ; i++){
+            if(i == 26){
+                st = pathData.toString() + "//TemporaryFiles//number&sign";
+            }else{
+                st = pathData.toString() + "//TemporaryFiles//"  + ((char)(i+97));
+            }
+            pathes[i] = Paths.get(st);
+            new File(pathes[i].toString()).mkdirs();
+            System.out.println("e: "+pathes[i].toString());
+        }
+        return pathes;
     }
 
     private void clearLinkedListArray(){
@@ -62,6 +87,7 @@ public class Indexer {
             synchronized (lookIncrease) {
                 local_file_num = fileNumber;
                 fileNumber++;
+             //   System.out.println("local:"+local_file_num);
             }
             Elements title = doc.getElementsByTag("TI");
             Elements date = doc.getElementsByTag("DATE1");
@@ -83,21 +109,18 @@ public class Indexer {
                     max_tf = mp.get(s);
                 }
             }
+           // System.out.println(local_file_num + "=" + title.text() + "|" + date.text() + "|" + docno.text() + "|max_tf|" + max_tf + "|qw|" + mp.size());
             fileMeta_data.add(local_file_num + "=" + title.text() + "|" + date.text() + "|" + docno.text() + "|max_tf|" + max_tf + "|qw|" + mp.size());
+         //   System.out.println("local add:"+local_file_num);
             fileIteration++;
             //   System.out.println(fileIteration);
             ManageWritingInformation(local_file_num ,false);
         }
     }
     private void ManageWritingInformation(int local_file_num,boolean endWriting){
-//        if(endWriting) {
-//            System.out.println(fileNumber);
-//        }else{
-//            System.out.println(local_file_num);
-//        }
 
-            if(fileIteration>=1000 || endWriting){
-                System.out.println(local_file_num);
+            if(fileIteration>=10000 || endWriting){
+              //  System.out.println(local_file_num);
                 String[] voc = Voc.keySet().toArray(new String[Voc.size()]);
                 for (String term:
                         voc) {
@@ -110,49 +133,123 @@ public class Indexer {
                         letter =  (char)(((int )letter)+32) ;
                     }
                     if(letter>= 97 && letter<=122){
-                        AB_words[((int)letter)-97].add(term+"="+Voc.get(term).toString());
+                        AB_words[((int)letter)-97].add(new Pair<>(term , Voc.get(term).toString()));
                     }else{
-                        AB_words[26].add(term+"="+Voc.get(term).toString()+"\n");
+                        AB_words[26].add(new Pair<>(term , Voc.get(term).toString()));
                     }
                 }
                 fileIteration = 0 ;
-                writeFile();
+                writePostingFile();
                 Voc = new HashMap<>();
 
 
             }
         }
-    public void writeFile(){
-        String st ;
-        int index =0;
-        for (LinkedList<String> terms:
-            AB_words ) {
 
-            if(index == 26){
-                st = this.pathData.toString() + "//number&sign";
-            }else{
-                st = this.pathData.toString() + "//@"  + ((char)(index+97));
-            }
-            Path p = Paths.get(st);
-            String listString = String.join("\n", terms);
-            byte data[] = listString.getBytes();
-            synchronized (AB_wordsLook[index]) {
-                try (OutputStream out = new BufferedOutputStream(
-                        Files.newOutputStream(p, CREATE, APPEND))) {
-                    out.write(data, 0, data.length);
-                } catch (IOException x) {
-                    System.err.println(x);
+    public static void MergeTemporaryFile(File folder  , Path mergedFilesFolder ,File fileIndexing){
+        new File(mergedFilesFolder.toString()).mkdirs();
+        System.out.println("size:"+folder.listFiles().length);
+        ExecutorService tpex = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()/2);
+        for (final File fileEntry : folder.listFiles()) {
+            if(fileEntry.isDirectory()){
+                System.out.println("path:" + fileEntry.getPath());
+                if(fileEntry.getName().length() > 1){
+                    Thread t = new Thread(new IndexerMerging(fileEntry , 26 , mergedFilesFolder));
+                    tpex.execute(t);
+                 //   t.start();
+                }else {
+                    int firstNumberOfName = (int) fileEntry.getName().charAt(0);
+                    System.out.println(firstNumberOfName);
+                    if (firstNumberOfName >= 97 && firstNumberOfName <= 122) {
+                        Thread t = new Thread(new IndexerMerging(fileEntry, firstNumberOfName - 97, mergedFilesFolder));
+                        //  t.start();
+                        tpex.execute(t);
+                        //   tpex.submit(new IndexerMerging(fileEntry , 26 , mergedFilesFolder));
+                    }
                 }
             }
-            index++;
+        }
+        SortIndexingToFiles(fileIndexing);
+        tpex.shutdown();
+        while (!tpex.isTerminated()){
+            Thread.yield();
+        }
+        System.out.println("finished");
+    }
+
+    public static void SortIndexingToFiles(File file){
+        try {
+            String text = new String(Files.readAllBytes(file.toPath()));
+            String[] splitedLinesInput = text.split("\n");
+            System.out.println(splitedLinesInput.length);
+            String[] output = new String[splitedLinesInput.length] ;
+            for (int i = 0 ; i < splitedLinesInput.length ; i++){
+                try {
+                    int indexOfFile = Integer.parseInt(splitedLinesInput[i].substring(0,splitedLinesInput[i].indexOf("=")));
+                    output[indexOfFile-1] = splitedLinesInput[i];
+                }catch (Exception e){
+
+                    System.out.println("SortIndexingToFiles error " +splitedLinesInput[i]+" |"+e+"|"+i);
+                }
+            }
+
+            Path pathForSaving = Paths.get(file.toString()+"Analayzed");
+            String listString = String.join("\n", output );
+            byte data[] = listString.getBytes();
+
+            try (OutputStream out = new BufferedOutputStream(
+                    Files.newOutputStream(pathForSaving, CREATE))) {
+                out.write(data, 0, data.length);
+            } catch (IOException x) {
+                System.err.println(x);
+            }
+
+        }catch (IOException x) {
+            System.err.println(x);
+        }
+    }
+
+
+    public void writePostingFile(){
+        if(! pathesTemporaryFilesExist){
+            synchronized (lookIncreaseWritingId) {
+                if (! pathesTemporaryFilesExist){
+                    pathesTemporaryFilesExist = true;
+                    pathsTemporaryFiles = PathesTemporaryFiles();
+                }
+            }
+        }
+        String st ;
+        int index =0;
+        for (LinkedList<Pair<String,String>> terms:
+            AB_words ) {
+            int numberOfWriting = 0 ;
+            synchronized (lookIncreaseWritingId){
+                numberOfWriting = writingId;
+                writingId++;
+            }
+
+            String path = pathsTemporaryFiles[index].toString()+"//"+numberOfWriting;
+            System.out.println(path);
+
+            try {
+                FileOutputStream f = new FileOutputStream(new File(path));
+                ObjectOutputStream o = new ObjectOutputStream(f);
+                o.writeObject(AB_words[index]);
+                o.close();
+            }catch (Exception e){ }
+
+           index++;
         }
         clearLinkedListArray();
 
         st = this.pathData.toString() + "//@Docs_Information" ;
         Path p = Paths.get(st);
-        String listString = String.join("\n", fileMeta_data);
+        String listString = String.join("\n", fileMeta_data)+"\n";
+
         byte data[] = listString.getBytes();
         synchronized (lookWriteDocsInformationFile) {
+         //   System.out.println("------------------->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"+listString.substring(0,5));
             try (OutputStream out = new BufferedOutputStream(
                     Files.newOutputStream(p, CREATE, APPEND))) {
                 out.write(data, 0, data.length);

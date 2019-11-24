@@ -3,7 +3,9 @@ import java.math.RoundingMode;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.Timestamp;
 import java.text.DecimalFormat;
+import java.time.Duration;
 import java.util.*;
 
 public class MainFileCreation {
@@ -44,10 +46,12 @@ public class MainFileCreation {
 
 
        final File folder = new File("D://מסמכים//לימודים//שנה ג//איחזור//corpus");
-        Path p = Paths.get("D://מסמכים//לימודים//שנה ג//איחזור//test894");
+        Path p = Paths.get("D://מסמכים//לימודים//שנה ג//איחזור//test555");
+
+        long start = System.currentTimeMillis();
 //        ReadFile rf = new ReadFile(p ,folder);
 //        rf.run();
-
+//
         int cores = Runtime.getRuntime().availableProcessors();
         Thread[] threads = new Thread[cores];
         System.out.println(cores);
@@ -61,9 +65,14 @@ public class MainFileCreation {
             }
         }catch (Exception e) {
         }
+        final File lo = new File("D://מסמכים//לימודים//שנה ג//איחזור//test555//TemporaryFiles");
+        final File co = new File("D://מסמכים//לימודים//שנה ג//איחזור//test555//@Docs_Information");
+        Path to = Paths.get("D://מסמכים//לימודים//שנה ג//איחזור//test555//PostingFiles");
+        Indexer.MergeTemporaryFile( lo,to,co);
 
-
-
+        long finish = System.currentTimeMillis();
+        long timeElapsed = finish - start;
+        System.out.println(timeElapsed);
 
 
 

@@ -475,7 +475,7 @@ public class Parse {
             put("JUL","07");put("AUG","08");put("SEP","09");put("OCT","10");put("NOV","11");put("DEC","12");
         }};
         String check=text.get(index);
-        String next=text.get(index+1);
+        String next=getFromText(index+1);
         if(months.get(check)==null&&months.get(next)==null)
             return null;
         if(checkOnlyNumbers(check)==false&&checkOnlyNumbers(next)==false)
