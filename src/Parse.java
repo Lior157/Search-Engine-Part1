@@ -27,17 +27,15 @@ public class Parse {
 
         /*run on each file text - remove stop words ,parse it(and increases number of appearances), stems it , data analysis(the term with the most appearances,number of all terms,*/
         String[] str2 = text.split("[:\\s\\r?\\n]+");
-        System.out.println("length-"+str2.length);
         DATA = new HashMap<>();
         entities=new HashMap<>();
         this.text = new ArrayList<String>();
         for(int i=0 ; i<str2.length ;i++) {
-            String checkEntity=null;
             if(str2[i].equals("U.S.")) {
                 this.text.add(str2[i]);
                 continue;
             }
-            if(!Seperate(str2[i]))
+            if(!Seperate(str2[i])&&str2[i].length()>0)
                 this.text.add(str2[i]);
         }
 
@@ -64,9 +62,16 @@ public class Parse {
                 AddToData(str,false);
                 continue;
             }
+            str=IsDate(indexDoc);
+            if(str!=null){
+                AddToData(str,false);
+                continue;
+            }
             if(checkIfTermHasConnectionToNumber(indexDoc)!=null){
                 str=getNumber(indexDoc);
-                if(str == null) continue;
+                if(str == null)
+                    continue;
+                System.out.println(str);
                 AddToData(str,true);
                 continue;
             }
@@ -184,12 +189,17 @@ public class Parse {
 
     private String getNumber(int index) {
         String str;
-
+        String check1=getFromText(index+1);
+        String check2=getFromText(index+2);
         str = this.IsPercent(index);
         if (str != null)
             return str;
 
         str = this.IsPrice(index);
+        if (str != null)
+            return str;
+
+        str = this.IsWeight(index);
         if (str != null)
             return str;
 
@@ -329,6 +339,7 @@ public class Parse {
         }else return number.toString() ;
         return null;
     }
+
     private String IsPercent(int index){
         String word=getFromText(index);
         if(word.endsWith("%") || getFromText(index+1).equals("percent") || getFromText(index+1).equals("percentage")){
@@ -344,6 +355,8 @@ public class Parse {
 
 
     private String IsPrice(int index){
+        if(getFromText(index+2).equals("pounds"))
+            return null;
         String word =getFromText(index);
         String newTerm=checkIfTermHasConnectionToNumber(index);
         if(newTerm == null) return null;
@@ -419,6 +432,39 @@ public class Parse {
 
         return null;
     }
+
+    private String IsWeight(int index){
+        if(!getFromText(index+1).equals("tons")&&!getFromText(index+2).equals("pounds"))
+            return null;
+        String number=IsNumber(index);
+        if(number==null)
+            return null;
+        String amount=getFromText(index+1);
+        if(amount.equals("billion")){
+            if(number.contains(".")){
+                number=number.replace(".","");
+                number+="00M pounds";
+            }
+            else
+                number+="000M pounds";
+        }
+        else if(amount.equals("million"))
+            number+="M pounds";
+        else{
+            if(number.contains(".")){
+                number=number.replace(".","");
+                number+="00";
+            }
+            else
+                number+="000";
+            int num=Integer.parseInt(number);
+            num=num*2;
+            number=String.valueOf(num)+" pounds";
+        }
+        return number;
+    }
+
+
     public String IsDate(int index){
         Map<String, String> months = new HashMap<String, String>()
         {{
