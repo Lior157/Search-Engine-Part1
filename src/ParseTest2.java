@@ -74,7 +74,7 @@ public class ParseTest2 {
 
         text = "$450,000";
         ls = printTest(text);
-        //  assertEquals(ls.getFirst() , "450,000 Dollars");
+      //  assertEquals(ls.getFirst() , "450,000 Dollars");
 
 
         text = "1,000,000 Dollars";
@@ -88,6 +88,11 @@ public class ParseTest2 {
         text = "$100 million";
         ls = printTest(text);
         assertEquals(ls.getFirst() , "100 M Dollars");
+
+        text = "20.6m Dollars";
+        ls = printTest(text);
+        assertEquals(ls.getFirst() , "20.6 M Dollars");
+
 
         text = "20.6 m Dollars";
         ls = printTest(text);

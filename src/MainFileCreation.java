@@ -46,7 +46,7 @@ public class MainFileCreation {
 
 
        final File folder = new File("D://מסמכים//לימודים//שנה ג//איחזור//corpus");
-        Path p = Paths.get("D://מסמכים//לימודים//שנה ג//איחזור//test555");
+        Path p = Paths.get("D://מסמכים//לימודים//שנה ג//איחזור//test666");
 
         long start = System.currentTimeMillis();
 //        ReadFile rf = new ReadFile(p ,folder);
@@ -65,9 +65,9 @@ public class MainFileCreation {
             }
         }catch (Exception e) {
         }
-        final File lo = new File("D://מסמכים//לימודים//שנה ג//איחזור//test555//TemporaryFiles");
-        final File co = new File("D://מסמכים//לימודים//שנה ג//איחזור//test555//@Docs_Information");
-        Path to = Paths.get("D://מסמכים//לימודים//שנה ג//איחזור//test555//PostingFiles");
+        final File lo = new File("D://מסמכים//לימודים//שנה ג//איחזור//test666//TemporaryFiles");
+        final File co = new File("D://מסמכים//לימודים//שנה ג//איחזור//test666//@Docs_Information");
+        Path to = Paths.get("D://מסמכים//לימודים//שנה ג//איחזור//test666//PostingFiles");
         Indexer.MergeTemporaryFile( lo,to,co);
 
         long finish = System.currentTimeMillis();
