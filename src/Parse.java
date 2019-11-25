@@ -189,8 +189,6 @@ public class Parse {
 
     private String getNumber(int index) {
         String str;
-        String check1=getFromText(index+1);
-        String check2=getFromText(index+2);
         str = this.IsPercent(index);
         if (str != null)
             return str;
@@ -474,7 +472,7 @@ public class Parse {
             put("Feb","02");put("Mar","03");put("Apr","04");put("Jun","06");put("Jul","07");put("Aug","08");put("Sep","09");put("Oct","10");put("Nov","11");put("Dec","12");put("JAN","01");put("FEB","02");put("MAR","03");put("APR","04");put("JUN","06");
             put("JUL","07");put("AUG","08");put("SEP","09");put("OCT","10");put("NOV","11");put("DEC","12");
         }};
-        String check=text.get(index);
+        String check=getFromText(index);
         String next=getFromText(index+1);
         if(months.get(check)==null&&months.get(next)==null)
             return null;

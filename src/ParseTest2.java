@@ -11,15 +11,17 @@ public class ParseTest2 {
     @Test
     public void parseIt() {
         LinkedList<String> ls = null;
-        String text = "10.23 h h";
+        String text = "7.5 h h";
         ls = printTest(text);
-        assertEquals(ls.getFirst() , "10.23");
+        assertEquals(ls.getFirst() , "7.5");
 
         text = "10,123";
         ls = printTest(text);
         assertEquals(ls.getFirst() , "10.123K");
 
         text = "123 Thousand";
+
+
         ls = printTest(text);
         assertEquals(ls.getFirst() , "123K");
 
