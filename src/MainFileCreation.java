@@ -84,9 +84,9 @@ public class MainFileCreation {
         p = Paths.get("D://מסמכים//לימודים//שנה ג//איחזור//test666withStem");
 
        start = System.currentTimeMillis();
-//        ReadFile rf = new ReadFile(p ,folder);
-//        rf.run();
-//
+        ReadFile rf = new ReadFile(p ,folder);
+        rf.run();
+
         Thread[] threads2 = new Thread[cores];
         System.out.println(cores);
         for(int i=0 ; i< threads2.length ;i++) {

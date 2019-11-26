@@ -50,7 +50,7 @@ public class IndexerMerging implements Runnable {
             for (String key:
                     sortedMap ) {
                 content.append(key+" = "+"|df="+mergedFile.get(key).size()+"|"+mergedFile.get(key).toString()+"\n");
-                allVoc.append(key+"="+mergedFile.get(key).size());
+                allVoc.append(key+"="+mergedFile.get(key).size()+"\n");
             }
 
             if(index == 26){
