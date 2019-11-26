@@ -45,7 +45,7 @@ public class MainFileCreation {
 //
 //
 ////
-//        Parse.TurnOffStem();
+        Parse.TurnOffStem();
         File folder = new File("D://מסמכים//לימודים//שנה ג//איחזור//corpus");
         Path p = Paths.get("D://מסמכים//לימודים//שנה ג//איחזור//test666");
 
@@ -54,23 +54,23 @@ public class MainFileCreation {
 ////        rf.run();
 ////
        int cores = Runtime.getRuntime().availableProcessors();
-//        Thread[] threads = new Thread[cores];
-//        System.out.println(cores);
-//        for(int i=0 ; i< threads.length ;i++) {
-//            threads[i] = new Thread(new ReadFile(p ,folder));
-//            threads[i].start();
-//        }
-//        try {
-//            for (int i = 0; i < threads.length; i++) {
-//                threads[i].join();
-//            }
-//        }catch (Exception e) {
-//        }
+        Thread[] threads = new Thread[cores];
+        System.out.println(cores);
+        for(int i=0 ; i< threads.length ;i++) {
+            threads[i] = new Thread(new ReadFile(p ,folder));
+            threads[i].start();
+        }
+        try {
+            for (int i = 0; i < threads.length; i++) {
+                threads[i].join();
+            }
+        }catch (Exception e) {
+        }
          File lo = new File("D://מסמכים//לימודים//שנה ג//איחזור//test666//TemporaryFiles");
          File co = new File("D://מסמכים//לימודים//שנה ג//איחזור//test666//@Docs_Information.txt");
         Path to = Paths.get("D://מסמכים//לימודים//שנה ג//איחזור//test666//PostingFiles");
         Path po = Paths.get("D://מסמכים//לימודים//שנה ג//איחזור//test666");
-//        Indexer.MergeTemporaryFile( lo,to,co,po);
+        Indexer.MergeTemporaryFile( lo,to,co,po);
 ////
         long finish = System.currentTimeMillis();
         long timeElapsed = finish - start;
@@ -89,16 +89,16 @@ public class MainFileCreation {
 //
         Thread[] threads2 = new Thread[cores];
         System.out.println(cores);
-//        for(int i=0 ; i< threads2.length ;i++) {
-//            threads2[i] = new Thread(new ReadFile(p ,folder));
-//            threads2[i].start();
-//        }
-//        try {
-//            for (int i = 0; i < threads2.length; i++) {
-//                threads2[i].join();
-//            }
-//        }catch (Exception e) { System.out.println(e);
-//        }
+        for(int i=0 ; i< threads2.length ;i++) {
+            threads2[i] = new Thread(new ReadFile(p ,folder));
+            threads2[i].start();
+        }
+        try {
+            for (int i = 0; i < threads2.length; i++) {
+                threads2[i].join();
+            }
+        }catch (Exception e) { System.out.println(e);
+        }
           lo = new File("D://מסמכים//לימודים//שנה ג//איחזור//test666withStem//TemporaryFiles");
           co = new File("D://מסמכים//לימודים//שנה ג//איחזור//test666withStem//@Docs_Information.txt");
          to = Paths.get("D://מסמכים//לימודים//שנה ג//איחזור//test666withStem//PostingFiles");
