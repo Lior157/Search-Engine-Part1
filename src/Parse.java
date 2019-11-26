@@ -71,7 +71,7 @@ public class Parse {
                 str=getNumber(indexDoc);
                 if(str == null)
                     continue;
-                System.out.println(str);
+          //System.out.println(str);
                 AddToData(str,true);
                 continue;
             }
@@ -82,7 +82,7 @@ public class Parse {
             else
                 AddToData(getFromText(indexDoc),false);
         }
-        System.out.println(DATA);
+      //  System.out.println(DATA);
         return DATA;
     }
 
@@ -312,7 +312,6 @@ public class Parse {
                     if(y>1){
                         return null;
                     }
-                    break;
                 }
             }else{
                 //    System.out.println("foult :" + c);
@@ -395,10 +394,10 @@ public class Parse {
             }
             Double newNumber = Double.parseDouble(newTerm);
 // חסר מקרים רבים מיוחדים עם סיומות
-            if (getFromText(index + 1).equals("bn")||getFromText(index + 1).equals("billion")) {
+            if (getFromText(index ).endsWith("bn")||getFromText(index + 1).equals("bn")||getFromText(index + 1).equals("billion")) {
                 newNumber = newNumber * 1000000000;
             }
-            if (getFromText(index + 1).equals("m") ||getFromText(index + 1).equals("million") ) {
+            if (getFromText(index ).endsWith("m")||getFromText(index + 1).equals("m") ||getFromText(index + 1).equals("million") ) {
                 newNumber = newNumber * 1000000;
             } else if (getFromText(index + 1).equals("trillion")) {
                 newNumber = newNumber * 1000000000000.0;
@@ -434,7 +433,7 @@ public class Parse {
     private String IsWeight(int index){
         if(!getFromText(index+1).equals("tons")&&!getFromText(index+2).equals("pounds"))
             return null;
-        String number=IsNumber(index);
+        String number=checkIfTermHasConnectionToNumber(index);
         if(number==null)
             return null;
         String amount=getFromText(index+1);
@@ -455,7 +454,7 @@ public class Parse {
             }
             else
                 number+="000";
-            int num=Integer.parseInt(number);
+            long num=Long.parseLong(number);
             num=num*2;
             number=String.valueOf(num)+" pounds";
         }
