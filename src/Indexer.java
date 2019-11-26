@@ -183,6 +183,7 @@ public class Indexer {
         while (!tpex.isTerminated()){
             Thread.yield();
         }
+        IndexerMerging.summaryAllDictionaryWords(pathForAllDictionary);
         System.out.println("finished");
     }
 

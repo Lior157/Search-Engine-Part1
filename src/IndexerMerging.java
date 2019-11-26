@@ -54,11 +54,11 @@ public class IndexerMerging implements Runnable {
             }
 
             if(index == 26){
-                st = mergedFilesFolder.toString() + "//number&sign";
+                st = mergedFilesFolder.toString() + "//number&sign.txt";
             }else{
-                st = mergedFilesFolder.toString() + "//@"  + ((char)(index+97));
+                st = mergedFilesFolder.toString() + "//@"  + ((char)(index+97)+".txt");
             }
-            Path p = Paths.get(st+".txt");
+            Path p = Paths.get(st);
             System.out.println(p);
             byte data[] = content.toString().getBytes();
             try (OutputStream out = new BufferedOutputStream(
@@ -69,7 +69,7 @@ public class IndexerMerging implements Runnable {
                 System.err.println(x);
             }
 
-            Path p2 = Paths.get(pathForDictionary+"dictionary"+((char)(index+97))+".txt");
+            Path p2 = Paths.get(pathForDictionary+"//dictionary-"+((char)(index+97))+".txt");
             byte allVocInBytes[] = allVoc.toString().getBytes();
             try (OutputStream out = new BufferedOutputStream(
                     Files.newOutputStream(p2, CREATE))) {
@@ -80,7 +80,32 @@ public class IndexerMerging implements Runnable {
             }
         }catch (Exception e){ System.err.println(e);}
     }
+    public static void summaryAllDictionaryWords(Path pathForDictionary){
+        Path p2 = Paths.get(pathForDictionary+"//dictionaryAllCorpus.txt");
+        for(int i=0 ; i<27 ;i++){
+            FileInputStream fi;
+            byte[] array = new byte[0];
+            try {
 
+                File fileEntry = new File(pathForDictionary + "//dictionary-" + ((char) (i + 97)) + ".txt");
+                fi = new FileInputStream(fileEntry);
+                array = new byte[fi.read()];
+                fi.read( array );
+
+            }catch(Exception e){System.out.println(e);}
+
+
+            try (OutputStream out = new BufferedOutputStream(
+                    Files.newOutputStream(p2, CREATE,APPEND))) {
+                out.write(array, 0, array.length);
+                out.flush();
+            } catch (IOException x) {
+                System.err.println(x);
+            }
+        }
+
+
+    }
     @Override
     public void run() {
         MergeTemporaryFile();
