@@ -203,7 +203,7 @@ public class Indexer {
                 }
             }
 
-            Path pathForSaving = Paths.get(file.toString()+"Analayzed.txt");
+            Path pathForSaving = Paths.get(file.toString().substring(0,file.toString().indexOf("."))+"Analayzed.txt");
             String listString = String.join("\n", output );
             byte data[] = listString.getBytes();
 

@@ -89,9 +89,9 @@ public class IndexerMerging implements Runnable {
 
                 File fileEntry = new File(pathForDictionary + "//dictionary-" + ((char) (i + 97)) + ".txt");
                 fi = new FileInputStream(fileEntry);
-                array = new byte[fi.read()];
+                array = new byte[(int) fileEntry.length()];
                 fi.read( array );
-
+                fi.close();
             }catch(Exception e){System.out.println(e);}
 
 
