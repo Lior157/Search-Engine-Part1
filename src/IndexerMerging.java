@@ -4,22 +4,22 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.TreeSet;
+import java.util.*;
 
+import static java.nio.file.StandardOpenOption.APPEND;
 import static java.nio.file.StandardOpenOption.CREATE;
 
 public class IndexerMerging implements Runnable {
     private final File folder;
     private int index ;
     private final Path mergedFilesFolder;
+    private final Path pathForDictionary;
 
-    public IndexerMerging(File folder, int index, Path mergedFilesFolder) {
+    public IndexerMerging(File folder, int index, Path mergedFilesFolder, Path pathForDictionary) {
         this.folder = folder;
         this.index = index;
         this.mergedFilesFolder = mergedFilesFolder;
+        this.pathForDictionary = pathForDictionary;
     }
 
     public void MergeTemporaryFile(){
@@ -40,13 +40,17 @@ public class IndexerMerging implements Runnable {
                 }
             }
             // Map<String, LinkedList<String>> sortedMap = new TreeMap<String, LinkedList<String>>(mergedFile);
-            TreeSet<String> sortedMap = new TreeSet<>(mergedFile.keySet());
+            List<String> sortedMap = new ArrayList<String>(mergedFile.keySet());
+            Collections.sort(sortedMap, String.CASE_INSENSITIVE_ORDER);
+            //TreeSet<String> sortedMap = new TreeSet<>(mergedFile.keySet());
             String st;
             StringBuilder content = new StringBuilder();
-            String[] it = sortedMap.toArray(new String[mergedFile.size()]);
+            StringBuilder allVoc = new StringBuilder();
+          //  String[] it = sortedMap.toArray(new String[mergedFile.size()]);
             for (String key:
-                    it ) {
+                    sortedMap ) {
                 content.append(key+" = "+"|df="+mergedFile.get(key).size()+"|"+mergedFile.get(key).toString()+"\n");
+                allVoc.append(key+"="+mergedFile.get(key).size());
             }
 
             if(index == 26){
@@ -54,7 +58,7 @@ public class IndexerMerging implements Runnable {
             }else{
                 st = mergedFilesFolder.toString() + "//@"  + ((char)(index+97));
             }
-            Path p = Paths.get(st);
+            Path p = Paths.get(st+".txt");
             System.out.println(p);
             byte data[] = content.toString().getBytes();
             try (OutputStream out = new BufferedOutputStream(
@@ -64,9 +68,16 @@ public class IndexerMerging implements Runnable {
             } catch (IOException x) {
                 System.err.println(x);
             }
-//            synchronized (AB_wordsLook[index]) {
-//
-//            }
+
+            Path p2 = Paths.get(pathForDictionary+"dictionary"+((char)(index+97))+".txt");
+            byte allVocInBytes[] = allVoc.toString().getBytes();
+            try (OutputStream out = new BufferedOutputStream(
+                    Files.newOutputStream(p2, CREATE))) {
+                out.write(allVocInBytes, 0, allVocInBytes.length);
+                out.flush();
+            } catch (IOException x) {
+                System.err.println(x);
+            }
         }catch (Exception e){ System.err.println(e);}
     }
 

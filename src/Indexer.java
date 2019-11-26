@@ -26,12 +26,21 @@ public class Indexer {
     private Parse parser;
     private  static volatile Path pathData ;
     private LinkedList<Pair<String,String>>[] AB_words;
-    private static volatile Object[] AB_wordsLook = clearLookArray();
+//    private static volatile Object[] AB_wordsLook = clearLookArray();
     private static volatile Object lookWriteDocsInformationFile = new Object();
     private static volatile Integer writingId = 1 ;
     private static volatile Object lookIncreaseWritingId  = new Object();
     private static volatile Path[] pathsTemporaryFiles;
     private static volatile boolean  pathesTemporaryFilesExist = false;
+
+    public static void initialazleVariable(){
+        lookIncrease  = new Object();
+        fileNumber = 1 ;
+        lookWriteDocsInformationFile = new Object();
+        writingId = 1 ;
+        lookIncreaseWritingId  = new Object();
+        pathesTemporaryFilesExist = false;
+    }
 
     public Indexer(Path path){
         parser =new Parse();
@@ -93,8 +102,8 @@ public class Indexer {
             Elements date = doc.getElementsByTag("DATE1");
             Elements docno = doc.getElementsByTag("DOCNO");
 
-
             Map<String, Integer> mp = parser.parseIt(doc.text());
+
             int max_tf = 0;
             String[] it = mp.keySet().toArray(new String[mp.size()]);
 
@@ -146,7 +155,7 @@ public class Indexer {
             }
         }
 
-    public static void MergeTemporaryFile(File folder  , Path mergedFilesFolder ,File fileIndexing){
+    public static void MergeTemporaryFile(File folder  , Path mergedFilesFolder ,File fileIndexing, Path pathForAllDictionary){
         new File(mergedFilesFolder.toString()).mkdirs();
         System.out.println("size:"+folder.listFiles().length);
         ExecutorService tpex = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()/2);
@@ -154,14 +163,14 @@ public class Indexer {
             if(fileEntry.isDirectory()){
                 System.out.println("path:" + fileEntry.getPath());
                 if(fileEntry.getName().length() > 1){
-                    Thread t = new Thread(new IndexerMerging(fileEntry , 26 , mergedFilesFolder));
+                    Thread t = new Thread(new IndexerMerging(fileEntry , 26 , mergedFilesFolder,pathForAllDictionary));
                     tpex.execute(t);
                  //   t.start();
                 }else {
                     int firstNumberOfName = (int) fileEntry.getName().charAt(0);
                     System.out.println(firstNumberOfName);
                     if (firstNumberOfName >= 97 && firstNumberOfName <= 122) {
-                        Thread t = new Thread(new IndexerMerging(fileEntry, firstNumberOfName - 97, mergedFilesFolder));
+                        Thread t = new Thread(new IndexerMerging(fileEntry, firstNumberOfName - 97, mergedFilesFolder,pathForAllDictionary));
                         //  t.start();
                         tpex.execute(t);
                         //   tpex.submit(new IndexerMerging(fileEntry , 26 , mergedFilesFolder));
@@ -193,7 +202,7 @@ public class Indexer {
                 }
             }
 
-            Path pathForSaving = Paths.get(file.toString()+"Analayzed");
+            Path pathForSaving = Paths.get(file.toString()+"Analayzed.txt");
             String listString = String.join("\n", output );
             byte data[] = listString.getBytes();
 
@@ -243,7 +252,7 @@ public class Indexer {
         }
         clearLinkedListArray();
 
-        st = this.pathData.toString() + "//@Docs_Information" ;
+        st = this.pathData.toString() + "//@Docs_Information.txt" ;
         Path p = Paths.get(st);
         String listString = String.join("\n", fileMeta_data)+"\n";
 

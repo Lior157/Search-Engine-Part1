@@ -12,13 +12,12 @@ public class Parse {
     private ArrayList<String> text; //List of document words without stop words or blank spaces.
     private HashSet<String> stopWords;
     private int indexDoc ;
-    private boolean stem;
+    private static volatile boolean stem;
     private HashSet<String> endsOrStarts;
     public Map<String,Integer> entities;
 
 
     public Parse(){
-        this.stem=false;
         add_stopWords();
         endsOrStarts = new HashSet<String>(Arrays.asList("(", ")", ".","*","!","?",".",",",":",";","-","]","[",",","\""));
     }
@@ -147,11 +146,11 @@ public class Parse {
         return stemmer.toString();
     }
 
-    public void TurnOnStem(){
+    public static void TurnOnStem(){
         stem=true;
     }
 
-    public void TurnOffStem(){
+    public static void TurnOffStem(){
         stem=false;
     }
 
