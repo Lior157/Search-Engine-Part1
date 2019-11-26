@@ -45,8 +45,8 @@ public class MainFileCreation {
 
 
 
-       final File folder = new File("D://מסמכים//לימודים//שנה ג//איחזור//corpus");
-        Path p = Paths.get("D://מסמכים//לימודים//שנה ג//איחזור//test666");
+       final File folder = new File("C:\\Users\\Aviel\\IdeaProjects\\IR2\\corpus");
+        Path p = Paths.get("C:\\Users\\Aviel\\IdeaProjects\\IR2\\test1");
 
         long start = System.currentTimeMillis();
 //        ReadFile rf = new ReadFile(p ,folder);

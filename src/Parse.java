@@ -597,9 +597,12 @@ public class Parse {
 
     private boolean IsUnderMillion(String number,int index){
         String next=getFromText(index+1);
-        if(next.equals("m")||next.equals("bn")||next.equals("billion")||next.equals("million"))
+        if(next.equals("m")||next.equals("bn")||next.equals("billion")||next.equals("million")||number.contains("m")||number.contains("bn"))
             return false;
+        if(number.contains("/"))
+            return true;
         number=number.replace(",","");
+        System.out.println(number);
         Double check=Double.parseDouble(number);
         if(check<1000000)
             return true;
