@@ -199,6 +199,10 @@ public class Parse {
         if (str != null)
             return str;
 
+        str = this.IsLength(index);
+        if (str != null)
+            return str;
+
         str = this.IsNumber(index);
         if (str != null)
             return str;
@@ -605,5 +609,24 @@ public class Parse {
             return true;
         else
             return false;
+    }
+
+    private String IsLength(int index){
+        String next=getFromText(index+1);
+        if(!next.equals("feet")&&!next.equals("miles")&&!next.equals("yards"))
+            return null;
+        Double number;
+        try{
+            number=Double.parseDouble(getFromText(index));
+        }
+        catch(NumberFormatException nfe){
+            return null;
+        }
+        if(next.equals("feet"))
+            return number+" "+next;
+        else if(next.equals("yards"))
+            return number*3+" "+"feet";
+        else
+            return number*5280+" "+"feet";
     }
 }

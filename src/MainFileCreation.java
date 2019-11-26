@@ -46,8 +46,8 @@ public class MainFileCreation {
 //
 ////
         Parse.TurnOffStem();
-        File folder = new File("D://מסמכים//לימודים//שנה ג//איחזור//corpus");
-        Path p = Paths.get("D://מסמכים//לימודים//שנה ג//איחזור//test666");
+        File folder = new File("C:\\Users\\Aviel\\IdeaProjects\\IR2\\corpus");
+        Path p = Paths.get("C:\\Users\\Aviel\\IdeaProjects\\IR2\\test1");
 
         long start = System.currentTimeMillis();
 ////        ReadFile rf = new ReadFile(p ,folder);
@@ -66,10 +66,10 @@ public class MainFileCreation {
             }
         }catch (Exception e) {
         }
-         File lo = new File("D://מסמכים//לימודים//שנה ג//איחזור//test666//TemporaryFiles");
-         File co = new File("D://מסמכים//לימודים//שנה ג//איחזור//test666//@Docs_Information.txt");
-        Path to = Paths.get("D://מסמכים//לימודים//שנה ג//איחזור//test666//PostingFiles");
-        Path po = Paths.get("D://מסמכים//לימודים//שנה ג//איחזור//test666");
+         File lo = new File("C:\\Users\\Aviel\\IdeaProjects\\IR2\\test1\\TemporaryFiles");
+         File co = new File("C:\\Users\\Aviel\\IdeaProjects\\IR2\\test1\\@Docs_Information.txt");
+        Path to = Paths.get("C:\\Users\\Aviel\\IdeaProjects\\IR2\\test1\\PostingFiles");
+        Path po = Paths.get("C:\\Users\\Aviel\\IdeaProjects\\IR2\\test1");
         Indexer.MergeTemporaryFile( lo,to,co,po);
 ////
         long finish = System.currentTimeMillis();
@@ -80,12 +80,14 @@ public class MainFileCreation {
         Parse.TurnOnStem();
         ReadFile.initialazleVariable();
         Indexer.initialazleVariable();
-        folder = new File("D://מסמכים//לימודים//שנה ג//איחזור//corpus");
-        p = Paths.get("D://מסמכים//לימודים//שנה ג//איחזור//test666withStem");
+        folder = new File("C:\\Users\\Aviel\\IdeaProjects\\IR2\\corpus");
+        p = Paths.get("C:\\Users\\Aviel\\IdeaProjects\\IR2\\test1withstem");
+
+
 
        start = System.currentTimeMillis();
         ReadFile rf = new ReadFile(p ,folder);
-        rf.run();
+        //rf.run();
 
         Thread[] threads2 = new Thread[cores];
         System.out.println(cores);
@@ -99,10 +101,10 @@ public class MainFileCreation {
             }
         }catch (Exception e) { System.out.println(e);
         }
-          lo = new File("D://מסמכים//לימודים//שנה ג//איחזור//test666withStem//TemporaryFiles");
-          co = new File("D://מסמכים//לימודים//שנה ג//איחזור//test666withStem//@Docs_Information.txt");
-         to = Paths.get("D://מסמכים//לימודים//שנה ג//איחזור//test666withStem//PostingFiles");
-         po = Paths.get("D://מסמכים//לימודים//שנה ג//איחזור//test666withStem");
+          lo = new File("C:\\Users\\Aviel\\IdeaProjects\\IR2\\test1\\TemporaryFiles");
+          co = new File("C:\\Users\\Aviel\\IdeaProjects\\IR2\\test1\\@Docs_Information.txt");
+         to = Paths.get("C:\\Users\\Aviel\\IdeaProjects\\IR2\\test1\\PostingFiles");
+         po = Paths.get("C:\\Users\\Aviel\\IdeaProjects\\IR2\\test1withstem");
         Indexer.MergeTemporaryFile( lo,to,co,po);
 
          finish = System.currentTimeMillis();
