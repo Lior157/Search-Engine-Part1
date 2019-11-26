@@ -361,11 +361,8 @@ public class Parse {
             isPrice = true;
             if(IsUnderMillion(word.substring(1),index))
                 return word.substring(1)+" Dollars";
-        }else if(word.endsWith("$")){
-            isPrice = true ;
-            if(IsUnderMillion(word.substring(0,word.length()-1),index))
-                return word.substring(0,word.length()-1)+" Dollars";
-        }else if(checkIfTermHasConnectionToNumber(index+1)!=null  &&
+        }
+        else if(checkIfTermHasConnectionToNumber(index+1)!=null  &&
                 getFromText(index+1).contains("/")&&
                 getFromText(index+2).equals("Dollars")) {
             isPrice = true;
@@ -520,7 +517,7 @@ public class Parse {
         }
         for (; i < length; i++) {
             char c = word.charAt(i);
-            if (c < '0' || c > '9') {
+            if ((c < '0' || c > '9')&&c!='.') {
                 return false;
             }
         }
@@ -602,7 +599,8 @@ public class Parse {
         if(number.contains("/"))
             return true;
         number=number.replace(",","");
-        System.out.println(number);
+        if(!checkOnlyNumbers(number))
+            return false;
         Double check=Double.parseDouble(number);
         if(check<1000000)
             return true;
