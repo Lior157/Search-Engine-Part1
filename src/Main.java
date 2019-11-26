@@ -6,10 +6,10 @@ public class Main {
 
     public static void main(String[] args) {
 
-        String text= "                              Damascus 7.5 billion pounds turned the unprecedented visit of an Israeli Arab \n" +
+        String text= "                              Damascus 7.52 billion pounds turned the unprecedented visit of an Israeli Arab \n" +
                 "delegation to Syria into a major media event, eliciting from the \n" +
                 "visitors strong rhetorical  support for Syrian policies. \n" +
-                "President Hafiz al-Asad also used the event to restate Syria's \n" +
+                "President Hafiz al-Asad also used the 7.5 billion pounds event to restate Syria's \n" +
                 "overall position on the peace process.  The visit itself, and the \n" +
                 "fact that the delegation head was permitted to use Syrian media \n" +
                 "to portray a relatively positive image of the Israeli public and \n" +
@@ -199,7 +199,7 @@ public class Main {
                 "\n" +
                 "   Implications \n" +
                 "\n" +
-                "   The very fact that Darawshah 8 tons was given a forum for his more \n" +
+                "   The very fact that Darawshah 8.4 tons was given a forum for his more \n" +
                 "favorable statements on Israel suggests that Syria wants the \n" +
                 "visit to be seen as a significant indication of a genuine Syrian \n" +
                 "openness to peace with Israel and as meeting Israeli demands that \n" +
@@ -208,16 +208,16 @@ public class Main {
                 "there may well be more such visits.  But, considering Syrian \n" +
                 "sensitivity over even the 500 million pounds appearance of normalizing relations \n" +
                 "with the Jewish state, and given Syria's repeated objections to \n" +
-                "Israeli demands for 50.3 million pounds a commitment to such normalization in the \n" +
+                "Israeli demands for 50.32 million pounds a commitment to such normalization in the \n" +
                 "future, similar visits by Jewish citizens of Israel are probably \n" +
                 "not imminent. \n" +
                 "   (AUTHOR:  BROWN.  QUESTIONS AND/OR COMMENTS, PLEASE CALL CHIEF, \n" +
                 "NEAR EAST ANALYSIS BRANCH (703) 733-6094.) \n" +
                 "CB 16/2120z Mar ";
 
-//        Parse test=new Parse();
-//        test.parseIt(text);
-//        System.out.println(test.entities);
+        Parse test=new Parse();
+        test.parseIt(text);
+        System.out.println(test.entities);
 
     }
 

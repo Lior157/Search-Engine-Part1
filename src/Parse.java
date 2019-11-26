@@ -71,7 +71,6 @@ public class Parse {
                 str=getNumber(indexDoc);
                 if(str == null)
                     continue;
-          //System.out.println(str);
                 AddToData(str,true);
                 continue;
             }
@@ -360,8 +359,12 @@ public class Parse {
         boolean isPrice = false;
         if(word.startsWith("$")){
             isPrice = true;
+            if(IsUnderMillion(word.substring(1),index))
+                return word.substring(1)+" Dollars";
         }else if(word.endsWith("$")){
             isPrice = true ;
+            if(IsUnderMillion(word.substring(0,word.length()-1),index))
+                return word.substring(0,word.length()-1)+" Dollars";
         }else if(checkIfTermHasConnectionToNumber(index+1)!=null  &&
                 getFromText(index+1).contains("/")&&
                 getFromText(index+2).equals("Dollars")) {
@@ -439,8 +442,13 @@ public class Parse {
         String amount=getFromText(index+1);
         if(amount.equals("billion")){
             if(number.contains(".")){
-                number=number.replace(".","");
-                number+="00M pounds";
+                String[] check=number.split("\\.");
+                number = number.replace(".", "");
+                if(check[1].length()<2)
+                    number += "00M pounds";
+                else
+                    number += "0M pounds";
+
             }
             else
                 number+="000M pounds";
@@ -449,14 +457,18 @@ public class Parse {
             number+="M pounds";
         else{
             if(number.contains(".")){
-                number=number.replace(".","");
-                number+="00";
+                String[] check=number.split("\\.");
+                number = number.replace(".", "");
+                if(check[1].length()<2)
+                    number += "00";
+                else
+                    number += "0";
             }
             else
                 number+="000";
             long num=Long.parseLong(number);
             num=num*2;
-            number=String.valueOf(num)+" pounds";
+            number=num+" pounds";
         }
         return number;
     }
@@ -581,5 +593,17 @@ public class Parse {
         }
         if(text.get(i) == null) return " ";
         return text.get(i);
+    }
+
+    private boolean IsUnderMillion(String number,int index){
+        String next=getFromText(index+1);
+        if(next.equals("m")||next.equals("bn")||next.equals("billion")||next.equals("million"))
+            return false;
+        number=number.replace(",","");
+        Double check=Double.parseDouble(number);
+        if(check<1000000)
+            return true;
+        else
+            return false;
     }
 }

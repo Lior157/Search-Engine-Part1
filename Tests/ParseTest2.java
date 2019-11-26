@@ -76,7 +76,7 @@ public class ParseTest2 {
 
         text = "$450,000";
         ls = printTest(text);
-      //  assertEquals(ls.getFirst() , "450,000 Dollars");
+        assertEquals(ls.getFirst() , "450,000 Dollars");
 
 
         text = "1,000,000 Dollars";
@@ -132,6 +132,33 @@ public class ParseTest2 {
         text = "4 Dollars";
         ls = printTest(text);
        assertEquals(ls.getFirst() , "4 Dollars");
+       text="123 billion pounds";
+       ls=printTest(text);
+        assertTrue(ls.contains("123000M pounds"));
+        text="14.7 billion pounds";
+        ls=printTest(text);
+        assertTrue(ls.contains("14700M pounds"));
+        text="12.52 billion pounds";
+        ls=printTest(text);
+        assertTrue(ls.contains("12520M pounds"));
+        text="123 million pounds";
+        ls=printTest(text);
+        assertTrue(ls.contains("123M pounds"));
+        text="14.7 million pounds";
+        ls=printTest(text);
+        assertTrue(ls.contains("14.7M pounds"));
+        text="12.52 million pounds";
+        ls=printTest(text);
+        assertTrue(ls.contains("12.52M pounds"));
+        text="123 tons";
+        ls=printTest(text);
+        assertTrue(ls.contains("246000 pounds"));
+        text="14.4 tons";
+        ls=printTest(text);
+        assertTrue(ls.contains("28800 pounds"));
+        text="12.52 tons";
+        ls=printTest(text);
+        assertTrue(ls.contains("25040 pounds"));
     }
     private LinkedList<String> printTest(String text){
         Parse pr = new Parse();

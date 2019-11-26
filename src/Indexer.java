@@ -1,4 +1,4 @@
-import com.sun.scenario.effect.Merge;
+
 import javafx.util.Pair;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
