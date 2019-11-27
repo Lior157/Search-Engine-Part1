@@ -237,7 +237,7 @@ public class Parse {
             AddToData(getFromText(i),false);
         }
         if(size==1)
-            return entity;
+            return null;
         this.indexDoc+=size-1;
         return entity;
     }
@@ -487,7 +487,7 @@ public class Parse {
         String next=getFromText(index+1);
         if(months.get(check)==null&&months.get(next)==null)
             return null;
-        if(checkOnlyNumbers(check)==false&&checkOnlyNumbers(next)==false)
+        if(!checkOnlyNumbers(check)&&!checkOnlyNumbers(next))
             return null;
         if(months.get(check)!=null){
             int size=next.length();
@@ -616,17 +616,31 @@ public class Parse {
         if(!next.equals("feet")&&!next.equals("miles")&&!next.equals("yards"))
             return null;
         Double number;
+        boolean IsInt=false;
+        if(!getFromText(index).contains("."))
+            IsInt=true;
+
         try{
             number=Double.parseDouble(getFromText(index));
         }
         catch(NumberFormatException nfe){
             return null;
         }
-        if(next.equals("feet"))
-            return number+" "+next;
-        else if(next.equals("yards"))
-            return number*3+" "+"feet";
-        else
-            return number*5280+" "+"feet";
+        if(!IsInt) {
+            if (next.equals("feet"))
+                return number + " " + next;
+            else if (next.equals("yards"))
+                return number * 3 + " " + "feet";
+            else
+                return number * 5280 + " " + "feet";
+        }
+        else{
+            if (next.equals("feet"))
+                return Math.round(number) + " " + next;
+            else if (next.equals("yards"))
+                return Math.round(number) * 3 + " " + "feet";
+            else
+                return Math.round(number) * 5280 + " " + "feet";
+        }
     }
 }

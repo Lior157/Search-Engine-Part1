@@ -159,6 +159,50 @@ public class ParseTest2 {
         text="12.52 tons";
         ls=printTest(text);
         assertTrue(ls.contains("25040 pounds"));
+        text="123 feet";
+        ls=printTest(text);
+        assertTrue(ls.contains("123 feet"));
+        text="14.4 feet";
+        ls=printTest(text);
+        assertTrue(ls.contains("14.4 feet"));
+        text="12.52 feet";
+        ls=printTest(text);
+        assertTrue(ls.contains("12.52 feet"));
+        text="123 yards";
+        ls=printTest(text);
+        assertTrue(ls.contains("369 feet"));
+        text="14.4 yards";
+        ls=printTest(text);
+        assertTrue(ls.contains("43.2 feet"));
+        text="12.52 yards";
+        ls=printTest(text);
+        assertTrue(ls.contains("37.56 feet"));
+        text="123 miles";
+        ls=printTest(text);
+        assertTrue(ls.contains("649440 feet"));
+        text="14.4 miles";
+        ls=printTest(text);
+        assertTrue(ls.contains("76032.0 feet"));
+        text="14 May";
+        ls=printTest(text);
+        assertTrue(ls.contains("05-14"));
+        text="14 MAY";
+        ls=printTest(text);
+        assertTrue(ls.contains("05-14"));
+        text="JUNE 04";
+        ls=printTest(text);
+        assertTrue(ls.contains("06-04"));
+        text="June 04";
+        ls=printTest(text);
+        assertTrue(ls.contains("06-04"));
+        text="May 1994";
+        ls=printTest(text);
+        assertTrue(ls.contains("1994-05"));
+        text="MAY 1994";
+        ls=printTest(text);
+        assertTrue(ls.contains("1994-05"));
+
+
     }
     private LinkedList<String> printTest(String text){
         Parse pr = new Parse();
