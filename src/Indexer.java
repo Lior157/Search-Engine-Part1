@@ -155,7 +155,7 @@ public class Indexer {
             }
         }
 
-    public static void MergeTemporaryFile(File folder  , Path mergedFilesFolder ,File fileIndexing, Path pathForAllDictionary){
+    public static void MergeTemporaryFile(File folder  , Path mergedFilesFolder ,File fileIndexing, Path pathForAllDictionary , Path pathForAllDictionaryWithFileNmae){
         new File(mergedFilesFolder.toString()).mkdirs();
         System.out.println("size:"+folder.listFiles().length);
         ExecutorService tpex = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()/2);
@@ -183,7 +183,7 @@ public class Indexer {
         while (!tpex.isTerminated()){
             Thread.yield();
         }
-        IndexerMerging.summaryAllDictionaryWords(pathForAllDictionary);
+        IndexerMerging.summaryAllDictionaryWords(pathForAllDictionary ,pathForAllDictionaryWithFileNmae);
         System.out.println("finished");
     }
 

@@ -80,8 +80,8 @@ public class IndexerMerging implements Runnable {
             }
         }catch (Exception e){ System.err.println(e);}
     }
-    public static void summaryAllDictionaryWords(Path pathForDictionary){
-        Path p2 = Paths.get(pathForDictionary+"//dictionaryAllCorpus.txt");
+    public static void summaryAllDictionaryWords(Path pathForDictionary , Path pathForAllDictionaryWithFileNmae){
+
         for(int i=0 ; i<27 ;i++){
             FileInputStream fi;
             byte[] array = new byte[0];
@@ -96,7 +96,7 @@ public class IndexerMerging implements Runnable {
 
 
             try (OutputStream out = new BufferedOutputStream(
-                    Files.newOutputStream(p2, CREATE,APPEND))) {
+                    Files.newOutputStream(pathForAllDictionaryWithFileNmae , CREATE,APPEND))) {
                 out.write(array, 0, array.length);
                 out.flush();
             } catch (IOException x) {

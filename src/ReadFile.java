@@ -50,7 +50,7 @@ public class ReadFile implements Runnable{
         this.folder = folder;
     }
 
-    private boolean deleteDirectory(File directoryToBeDeleted) {
+    public static boolean deleteDirectory(File directoryToBeDeleted) {
         File[] allContents = directoryToBeDeleted.listFiles();
         if (allContents != null) {
             for (File file : allContents) {
@@ -60,7 +60,7 @@ public class ReadFile implements Runnable{
         return directoryToBeDeleted.delete();
     }
 
-    public void listFilesForFolder(final File folder) {
+    private void listFilesForFolder(final File folder) {
         for (final File fileEntry : folder.listFiles()) {
             if (fileEntry.isDirectory()) {
                 listFilesForFolder(fileEntry);
