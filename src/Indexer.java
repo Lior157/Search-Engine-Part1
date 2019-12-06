@@ -42,8 +42,8 @@ public class Indexer {
         pathesTemporaryFilesExist = false;
     }
 
-    public Indexer(Path path){
-        parser =new Parse();
+    public Indexer(Path path,String corpus){
+        parser =new Parse(corpus);
         this.pathData=path;
         fileIteration=0;
         AB_words = new LinkedList[27];

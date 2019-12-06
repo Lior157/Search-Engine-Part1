@@ -11,13 +11,13 @@ public class PostingFiles implements PostingBuild{
     public void startBuildingStock(Path folderForFiles , Path CorpusPath ){
         //------------------------------------------- withStemming
         Parse.TurnOnStem();
-        ReadFile.initialazleVariable();
+        ReadFile.initialazleVariable(CorpusPath.toString());
         Indexer.initialazleVariable();
         Path withStem = Paths.get(folderForFiles.toString()+"\\"+withStemmimgFolderName);
         buildInvertedFiles(withStem ,  CorpusPath);
         //-------------------------------------------- withoutStemming
         Parse.TurnOffStem();
-        ReadFile.initialazleVariable();
+        ReadFile.initialazleVariable(CorpusPath.toString());
         Indexer.initialazleVariable();
         Path withOutStem = Paths.get(folderForFiles.toString()+"\\"+withoutStemmimgFolderName);
         buildInvertedFiles(withOutStem ,  CorpusPath);

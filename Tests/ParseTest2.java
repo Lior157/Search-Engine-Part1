@@ -205,7 +205,7 @@ public class ParseTest2 {
 
     }
     private LinkedList<String> printTest(String text){
-        Parse pr = new Parse();
+        Parse pr = new Parse("C:\\Users\\Aviel\\IdeaProjects\\IR2\\corpus\\corpus");
 
         Map<String,Integer> l = pr.parseIt(text);
         Iterator<String> it = l.keySet().iterator();

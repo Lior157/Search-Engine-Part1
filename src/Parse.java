@@ -17,8 +17,8 @@ public class Parse {
     public Map<String,Integer> entities;
 
 
-    public Parse(){
-        add_stopWords();
+    public Parse(String corpus){
+        add_stopWords(corpus);
         endsOrStarts = new HashSet<String>(Arrays.asList("(", ")", ".","*","!","?",".",",",":",";","-","]","[",",","\""));
     }
 
@@ -34,7 +34,7 @@ public class Parse {
                 this.text.add(str2[i]);
                 continue;
             }
-            if(!Seperate(str2[i])&&str2[i].length()>0)
+            if(!Separate(str2[i])&&str2[i].length()>0)
                 this.text.add(str2[i]);
         }
 
@@ -98,7 +98,7 @@ public class Parse {
 
     }
 
-    private boolean Seperate(String word){
+    private boolean Separate(String word){
         if(!word.contains("--"))
             return false;
         int index=0;
@@ -120,11 +120,11 @@ public class Parse {
         this.text.add(second);
         return true;
     }
-    private void add_stopWords(){
+    private void add_stopWords(String corpus){
         stopWords=new HashSet<>();
         try
         {
-            BufferedReader reader = new BufferedReader(new FileReader("StopWords.txt"));
+            BufferedReader reader = new BufferedReader(new FileReader(corpus+"/StopWords.txt"));
             String line;
             while ((line = reader.readLine()) != null)
             {

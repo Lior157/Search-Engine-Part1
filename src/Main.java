@@ -214,11 +214,6 @@ public class Main {
                 "   (AUTHOR:  BROWN.  QUESTIONS AND/OR COMMENTS, PLEASE CALL CHIEF, \n" +
                 "NEAR EAST ANALYSIS BRANCH (703) 733-6094.) \n" +
                 "CB 16/2120z Mar ";
-
-        Parse test=new Parse();
-        test.parseIt(text);
-        System.out.println(test.entities);
-
     }
 
 }

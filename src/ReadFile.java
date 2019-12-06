@@ -25,12 +25,14 @@ public class ReadFile implements Runnable{
     private static volatile Object lookClean  = new Object();
     private static volatile boolean cleanfile = true;
     private Indexer ind ;
+    private static String corpusPath;
 
 
-    public static void initialazleVariable(){
+    public static void initialazleVariable(String corpus){
         filesExecuted = new ConcurrentHashMap<>();
         lookClean = new Object();
         cleanfile=true;
+        corpusPath=corpus;
     }
     public ReadFile(Path pathData , final File folder) {
             synchronized (lookClean) {
@@ -110,7 +112,7 @@ public class ReadFile implements Runnable{
 
     @Override
     public void run() {
-       this.ind = new Indexer(pathData);
+       this.ind = new Indexer(pathData,corpusPath);
         listFilesForFolder(folder);
         ind.WriteData(null , true);
     }
