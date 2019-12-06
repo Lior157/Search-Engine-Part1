@@ -28,12 +28,22 @@ public class ReadFile implements Runnable{
     private static String corpusPath;
 
 
+    /**
+     * @param corpus The path to the corpus folder
+     * This function initializes the static variables of the class
+     */
     public static void initialazleVariable(String corpus){
         filesExecuted = new ConcurrentHashMap<>();
         lookClean = new Object();
         cleanfile=true;
         corpusPath=corpus;
     }
+
+    /**
+     * @param pathData The path to the dictionary location folder
+     * @param folder
+     * This constructor initializes and object
+     */
     public ReadFile(Path pathData , final File folder) {
             synchronized (lookClean) {
                 if (cleanfile) {
@@ -52,6 +62,11 @@ public class ReadFile implements Runnable{
         this.folder = folder;
     }
 
+    /**
+     * @param directoryToBeDeleted The path to the directory
+     * @return Boolean that represents success of the deletion
+     * This function deletes all the contents of the given path
+     */
     public static boolean deleteDirectory(File directoryToBeDeleted) {
         File[] allContents = directoryToBeDeleted.listFiles();
         if (allContents != null) {
@@ -62,6 +77,10 @@ public class ReadFile implements Runnable{
         return directoryToBeDeleted.delete();
     }
 
+    /**
+     * @param folder The dictionary wanted folder
+     * This function lists the files that the class reads
+     */
     private void listFilesForFolder(final File folder) {
         for (final File fileEntry : folder.listFiles()) {
             if (fileEntry.isDirectory()) {
@@ -82,6 +101,11 @@ public class ReadFile implements Runnable{
         }
     }
 
+    /**
+     * @param file The path to the file that needs reading
+     * @param fileName The file name that needs reading
+     * This function reads the file and writes his data
+     */
     public void readFile(Path file ,String fileName) {
 
 

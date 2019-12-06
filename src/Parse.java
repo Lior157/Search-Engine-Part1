@@ -22,37 +22,41 @@ public class Parse {
         endsOrStarts = new HashSet<String>(Arrays.asList("(", ")", ".","*","!","?",".",",",":",";","-","]","[",",","\""));
     }
 
+    /**
+     * @param text A string that has the document contents
+     * @return returns a list of terms after processing and activation of rules
+     */
     public Map<String,Integer> parseIt(String text){
 
         /*run on each file text - remove stop words ,parse it(and increases number of appearances), stems it , data analysis(the term with the most appearances,number of all terms,*/
         String[] str2 = text.split("[:\\s\\r?\\n]+");
         DATA = new HashMap<>();
         entities=new HashMap<>();
-        this.text = new ArrayList<String>();
+        this.text = new ArrayList<>();
         for(int i=0 ; i<str2.length ;i++) {
-            if(str2[i].equals("U.S.")) {
+            if(str2[i].equals("U.S.")) {  //checks a single case of word that falls after cleaning
                 this.text.add(str2[i]);
                 continue;
             }
-            if(!Separate(str2[i])&&str2[i].length()>0)
+            if(!Separate(str2[i])&&str2[i].length()>0) //checks if the word is not ""
                 this.text.add(str2[i]);
         }
 
         for(indexDoc=0 ; indexDoc< this.text.size() ;indexDoc++){
             String str;
             str=IsEntity(indexDoc);
-            if(str!=null){
+            if(str!=null){   //checks if the word is an entity
                 if(entities.get(str)!=null)
                     entities.put(str,entities.get(str)+1);
                 else
                     entities.put(str,1);
                 continue;
             }
-            this.text.set(indexDoc,CleanWord(getFromText(indexDoc)));
+            this.text.set(indexDoc,CleanWord(getFromText(indexDoc)));  //cleans the word from start and end
             if(this.text.get(indexDoc).length()==0)
                 continue;
             str=IsRange(indexDoc);
-            if(str!=null){
+            if(str!=null){  //checks if the word is under the Range rule
                 AddToData(str,false);
                 continue;
             }
@@ -62,20 +66,20 @@ public class Parse {
                 continue;
             }
             str=IsDate(indexDoc);
-            if(str!=null){
+            if(str!=null){  //checks if the word is a date
                 AddToData(str,false);
                 continue;
             }
             if(checkIfTermHasConnectionToNumber(indexDoc)!=null){
                 str=getNumber(indexDoc);
-                if(str == null)
+                if(str == null)  //checks if the word is a number
                     continue;
                 AddToData(str,true);
                 continue;
             }
-            if(stopWords.contains(getFromText(indexDoc)))
+            if(stopWords.contains(getFromText(indexDoc))) //checks if the word is a Stop Word
                 continue;
-            if(stem)
+            if(stem) //if the stem is on, stem the word
                 AddToData(StemWord(getFromText(indexDoc)),false);
             else
                 AddToData(getFromText(indexDoc),false);
@@ -84,10 +88,14 @@ public class Parse {
         return DATA;
     }
 
+    /**
+     * @param word The word that needs cleaning
+     * @return The word after cleaning from start and ending
+     */
     private String CleanWord(String word){
         while(word.length()!=0 && endsOrStarts.contains(String.valueOf(word.charAt(word.length()-1))))
             word=word.substring(0,word.length()-1);
-        if(!word.contains("(703)")) {
+        if(!word.contains("(703)")) {  //checks a special case of a phone number
             while ((word.length() != 0 && endsOrStarts.contains(String.valueOf(word.charAt(0)))))
                 word = word.substring(1);
             return word;
@@ -98,6 +106,11 @@ public class Parse {
 
     }
 
+    /**
+     * @param word The word that needs separating
+     * @return The words after separating
+     * This function checks if there is -- in the word and if there is,separates to different words
+     */
     private boolean Separate(String word){
         if(!word.contains("--"))
             return false;
@@ -120,6 +133,12 @@ public class Parse {
         this.text.add(second);
         return true;
     }
+
+
+    /**
+     * @param corpus The path to the corpus
+     * This function adds the stop words to a list for later use
+     */
     private void add_stopWords(String corpus){
         stopWords=new HashSet<>();
         try
@@ -139,6 +158,10 @@ public class Parse {
         }
     }
 
+    /**
+     * @param word The word that needs stemming
+     * @return The word after stemming
+     */
     private String StemWord(String word){
         Stemmer stemmer=new Stemmer();
         stemmer.add(word.toCharArray(),word.length());
@@ -154,6 +177,11 @@ public class Parse {
         stem=false;
     }
 
+    /**
+     * @param word The term that needs to be added
+     * @param number Check if the term is a number for a special case of adding
+     * This function adds the term after processing to the map that gets sent to the Indexer
+     */
     private void AddToData(String word,boolean number){
         if(word.equals(" ")|| word.length()==0){
             return;
@@ -185,6 +213,11 @@ public class Parse {
         }
 
 
+    /**
+     * @param index The current index of the separated text
+     * @return The number if it is one
+     * This function checks through the many rules of numbers and returns the right term if it is a number
+     */
     private String getNumber(int index) {
         String str;
         str = this.IsPercent(index);
@@ -196,6 +229,7 @@ public class Parse {
             return str;
 
         str = this.IsWeight(index);
+
         if (str != null)
             return str;
 
@@ -210,6 +244,10 @@ public class Parse {
         return null;
     }
 
+    /**
+     * @param indexDoc The current index of the separated text
+     * @return The entity term
+     */
     private String IsEntity(int indexDoc){
         String entity="";
         String word=getFromText(indexDoc);
@@ -242,6 +280,10 @@ public class Parse {
         return entity;
     }
 
+    /**
+     * @param indexDoc The current index of the separated text
+     * @return The range term
+     */
     private String IsRange(int indexDoc){
       //  System.out.println("c: "+getFromText(indexDoc));
         String[]words=getFromText(indexDoc).split("-");
@@ -264,6 +306,11 @@ public class Parse {
         else
             return null;
     }
+
+    /**
+     * @param index The current index of the separated text
+     * @return The number term
+     */
     private String IsNumber(int index){
         String term = getFromText(index) ;
         StringBuilder number = new StringBuilder();
@@ -291,6 +338,10 @@ public class Parse {
         return editNumberKMB(index, number.toString());
     }
 
+    /**
+     * @param index The current index of the separated text
+     * @return Checks if the word has a connection to number
+     */
     private String checkIfTermHasConnectionToNumber(int index ){
         /* number ; "," ; . ; % ; $ ; m,bn......*/
         boolean dollars = false;
@@ -339,6 +390,10 @@ public class Parse {
         return null;
     }
 
+    /**
+     * @param index The current index of the separated text
+     * @return The percent term
+     */
     private String IsPercent(int index){
         String word=getFromText(index);
         if(word.endsWith("%") || getFromText(index+1).equals("percent") || getFromText(index+1).equals("percentage")){
@@ -353,6 +408,10 @@ public class Parse {
     }
 
 
+    /**
+     * @param index The current index of the separated text
+     * @return The price term
+     */
     private String IsPrice(int index){
         if(getFromText(index+2).equals("pounds"))
             return null;
@@ -433,6 +492,10 @@ public class Parse {
         return null;
     }
 
+    /**
+     * @param index The current index of the separated text
+     * @return The weight term
+     */
     private String IsWeight(int index){
         if(!getFromText(index+1).equals("tons")&&!getFromText(index+2).equals("pounds"))
             return null;
@@ -474,6 +537,10 @@ public class Parse {
     }
 
 
+    /**
+     * @param index The current index of the separated text
+     * @return The date term
+     */
     public String IsDate(int index){
         Map<String, String> months = new HashMap<String, String>()
         {{
@@ -503,6 +570,10 @@ public class Parse {
         this.text = text;
     }
 
+    /**
+     * @param word The word that needs checking
+     * @return boolean that represents if the word contains only number characters
+     */
     public boolean checkOnlyNumbers(String word){
         if (word == null) {
             return false;
@@ -528,6 +599,10 @@ public class Parse {
     }
 
 
+    /**
+     * @param index The current index of the separated text
+     * @return The between term
+     */
     public String isBetween(int index){
         String check=getFromText(index);
         if(check!="between" && check!="Between")
@@ -538,6 +613,12 @@ public class Parse {
             return null;
         return "between "+num1+" and "+num2;
     }
+
+    /**
+     * @param index The current index of the separated text
+     * @param Number
+     * @return The number after editing
+     */
     private String editNumberKMB(int index , String Number ){// number && corrent index
         if(Number.contains("/")){
             return Number;
@@ -587,6 +668,10 @@ public class Parse {
         return str;
     }
 
+    /**
+     * @param i The current index of the separated text
+     * @return The current index from the text after checking for size
+     */
     private String getFromText(int i){
         if(i >= text.size()){
             return " ";
@@ -595,6 +680,11 @@ public class Parse {
         return text.get(i);
     }
 
+    /**
+     * @param number
+     * @param index The current index of the separated text
+     * @return The boolean that says if the number is under a million
+     */
     private boolean IsUnderMillion(String number,int index){
         String next=getFromText(index+1);
         if(next.equals("m")||next.equals("bn")||next.equals("billion")||next.equals("million")||number.contains("m")||number.contains("bn"))
@@ -611,6 +701,10 @@ public class Parse {
             return false;
     }
 
+    /**
+     * @param index The current index of the separated text
+     * @return The length term
+     */
     private String IsLength(int index){
         String next=getFromText(index+1);
         if(!next.equals("feet")&&!next.equals("miles")&&!next.equals("yards"))
