@@ -19,7 +19,7 @@ public class Parse {
 
     public Parse(String corpus){
         add_stopWords(corpus);
-        endsOrStarts = new HashSet<String>(Arrays.asList("(", ")", ".","*","!","?",".",",",":",";","-","]","[",",","\""));
+        endsOrStarts = new HashSet<String>(Arrays.asList("(", ")", ".","*","!","?",".",",",":",";","-","]","[",",","\"","'","[","]","{","}","@","#","^","&","_"));
     }
 
     /**
@@ -77,7 +77,7 @@ public class Parse {
                 AddToData(str,true);
                 continue;
             }
-            if(stopWords.contains(getFromText(indexDoc))) //checks if the word is a Stop Word
+            if(stopWords.contains(getFromText(indexDoc))||stopWords.contains(getFromText(indexDoc).toLowerCase())||stopWords.contains(getFromText(indexDoc).substring(0,1).toUpperCase()+getFromText(indexDoc).toLowerCase().substring(1))) //checks if the word is a Stop Word
                 continue;
             if(stem) //if the stem is on, stem the word
                 AddToData(StemWord(getFromText(indexDoc)),false);
@@ -143,7 +143,7 @@ public class Parse {
         stopWords=new HashSet<>();
         try
         {
-            BufferedReader reader = new BufferedReader(new FileReader(corpus+"/StopWords.txt"));
+            BufferedReader reader = new BufferedReader(new FileReader(corpus+"/stopwords.txt"));
             String line;
             while ((line = reader.readLine()) != null)
             {
