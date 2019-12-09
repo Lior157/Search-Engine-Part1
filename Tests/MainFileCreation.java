@@ -17,8 +17,11 @@ public class MainFileCreation {
         Path indexPlace = Paths.get("D:\\מסמכים\\לימודים\\שנה ג\\איחזור\\test666");
 
         ///// build indexing
-        pf.startBuildingStock(indexPlace , corpus);
-
+        String[] ans = pf.startBuildingStock(indexPlace , corpus);
+        for (String message:
+             ans) {
+            System.out.println(message);
+        }
         ///////=================== remove
       //  pf.deleteFolderInformation(indexPlace);
     }

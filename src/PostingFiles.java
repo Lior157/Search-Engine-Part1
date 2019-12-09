@@ -16,19 +16,29 @@ public class PostingFiles implements PostingBuild{
      * @param folderForFiles path for output of the program - Posting Files and dictionary
      * @param CorpusPath path of the corpus
      */
-    public void startBuildingStock(Path folderForFiles , Path CorpusPath ){
+    public String[] startBuildingStock(Path folderForFiles , Path CorpusPath ){
+        String[] messages = new String[2];
+        long startTime;
         //------------------------------------------- withStemming
+        startTime = System.currentTimeMillis();
         Parse.TurnOnStem();
         ReadFile.initialazleVariable(CorpusPath.toString());
         Indexer.initialazleVariable();
         Path withStem = Paths.get(folderForFiles.toString()+"\\"+withStemmimgFolderName);
         buildInvertedFiles(withStem ,  CorpusPath);
+        messages[0]="Number of Indexed files:"+Indexer.getNumberOfIndexedDocs()+"\nNumer of Quniqe terms:"+IndexerMerging.NumberOfQniqueTerms()+
+                "\nProcess time:"+((System.currentTimeMillis()-startTime)/1000)+" sec";
         //-------------------------------------------- withoutStemming
+        startTime = System.currentTimeMillis();
         Parse.TurnOffStem();
         ReadFile.initialazleVariable(CorpusPath.toString());
         Indexer.initialazleVariable();
         Path withOutStem = Paths.get(folderForFiles.toString()+"\\"+withoutStemmimgFolderName);
         buildInvertedFiles(withOutStem ,  CorpusPath);
+        messages[1]="Number of Indexed files:"+Indexer.getNumberOfIndexedDocs()+"\nNumer of Quniqe terms:"+IndexerMerging.NumberOfQniqueTerms()+
+                "\nProcess time:"+((System.currentTimeMillis()-startTime)/1000)+" sec";
+
+        return messages;
     }
 
     /***

@@ -17,14 +17,23 @@ public class IndexerMerging implements Runnable {
     private int index ;
     private final Path mergedFilesFolder;
     private final Path pathForDictionary;
+    private static volatile Integer numberOfQniqueTerms;
+    private static Object lookForNumberOfQniqueTerms=new Object();
 
     public IndexerMerging(File folder, int index, Path mergedFilesFolder, Path pathForDictionary) {
         this.folder = folder;
         this.index = index;
         this.mergedFilesFolder = mergedFilesFolder;
         this.pathForDictionary = pathForDictionary;
+        numberOfQniqueTerms=0;
     }
-
+    /**
+     * initialaze static variables
+     */
+    public static void initialazleVariable(){
+        lookForNumberOfQniqueTerms=new Object();
+        numberOfQniqueTerms=0;
+    }
     /**
      * merging the temporary files to posting files
      */
@@ -53,13 +62,36 @@ public class IndexerMerging implements Runnable {
             StringBuilder content = new StringBuilder();
             StringBuilder allVoc = new StringBuilder();
           //  String[] it = sortedMap.toArray(new String[mergedFile.size()]);
+            int tempNumberOfQnique=0;
             for (String key:
                     sortedMap ) {
                 content.append(key+" = "+"|df="+mergedFile.get(key).size()+"|"+mergedFile.get(key).toString()+"\n");
 
-                allVoc.append(key+"="+mergedFile.get(key).size()+"\n");
-            }
+                LinkedList<String> listOfTermAppearence = mergedFile.get(key);
+                int number_of_appearence = 0;
+                for(String appear : listOfTermAppearence){
+                    String[] pairs = appear.split(",");
+                    for (String pair:
+                         pairs) {
 
+                        int startIndex = pair.indexOf("=");
+                        String frequncy = pair.substring(startIndex+1);
+                        if(frequncy.endsWith("}")){
+                            frequncy = pair.substring(startIndex+1 , pair.length()-1);
+                        }
+                     //   System.out.println(pair+":::"+frequncy);
+                        number_of_appearence=number_of_appearence+Integer.parseInt(frequncy);
+                    }
+
+                }
+
+
+                allVoc.append(key+"="+number_of_appearence+"\n");
+                tempNumberOfQnique++;
+            }
+            synchronized (lookForNumberOfQniqueTerms){
+                numberOfQniqueTerms=numberOfQniqueTerms+tempNumberOfQnique;
+            }
             if(index == 26){
                 st = mergedFilesFolder.toString() + "//number&sign.txt";
             }else{
@@ -118,6 +150,14 @@ public class IndexerMerging implements Runnable {
         }
 
 
+    }
+
+    /**
+     *
+     * @return number of qniqueTerms
+     */
+    public static Integer NumberOfQniqueTerms(){
+        return numberOfQniqueTerms;
     }
     @Override
     public void run() {

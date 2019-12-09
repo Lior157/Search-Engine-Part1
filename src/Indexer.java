@@ -186,6 +186,7 @@ public class Indexer {
      * @param pathForAllDictionaryWithFileNmae
      */
     public static void MergeTemporaryFile(File folder  , Path mergedFilesFolder ,File fileIndexing, Path pathForAllDictionary , Path pathForAllDictionaryWithFileNmae){
+        IndexerMerging.initialazleVariable();
         new File(mergedFilesFolder.toString()).mkdirs();
         System.out.println("size:"+folder.listFiles().length);
         ExecutorService tpex = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()/2);
@@ -304,5 +305,13 @@ public class Indexer {
             }
         }
         fileMeta_data = new LinkedList<>();
+    }
+
+    /**
+     * get number of indexed documents
+     * @return number of docs
+     */
+    public static Integer getNumberOfIndexedDocs(){
+        return fileNumber-1 ;
     }
 }
