@@ -8,6 +8,14 @@ public class PostingFiles implements PostingBuild{
     private final String withStemmimgFolderName="withStem";
     private final String withoutStemmimgFolderName="withoutStem";
     private final String dictionaryFileName =" AllDictionary.txt";
+
+    /***
+     * This function excute buildInvertedFiles that build all process of building a Posting Files and dictionary
+     * first excution with stemming anf the second without.
+     * Measure the time of the process.
+     * @param folderForFiles path for output of the program - Posting Files and dictionary
+     * @param CorpusPath path of the corpus
+     */
     public void startBuildingStock(Path folderForFiles , Path CorpusPath ){
         //------------------------------------------- withStemming
         Parse.TurnOnStem();
@@ -22,6 +30,12 @@ public class PostingFiles implements PostingBuild{
         Path withOutStem = Paths.get(folderForFiles.toString()+"\\"+withoutStemmimgFolderName);
         buildInvertedFiles(withOutStem ,  CorpusPath);
     }
+
+    /***
+     * This function excute all process of building a Posting Files and dictionary
+     * @param folderForFiles path for output of the program - Posting Files and dictionary
+     * @param CorpusPath path of the corpus
+     */
     private void buildInvertedFiles(Path folderForFiles , Path CorpusPath){
         File folder = new File(CorpusPath.toString());
         Path p = folderForFiles;
@@ -54,6 +68,11 @@ public class PostingFiles implements PostingBuild{
         long timeElapsed = finish - start;
         System.out.println(timeElapsed);
     }
+
+    /**
+     * deletion of folder content
+     * @param folder to delete
+     */
     public void deleteFolderInformation(Path folder){
         ReadFile.deleteDirectory(new File(folder.toString()));
     }

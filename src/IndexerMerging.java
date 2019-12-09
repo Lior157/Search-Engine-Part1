@@ -9,6 +9,9 @@ import java.util.*;
 import static java.nio.file.StandardOpenOption.APPEND;
 import static java.nio.file.StandardOpenOption.CREATE;
 
+/***
+ * this class rensponsiable for taking a temporary files and sort & merge them to posing files
+ */
 public class IndexerMerging implements Runnable {
     private final File folder;
     private int index ;
@@ -22,6 +25,9 @@ public class IndexerMerging implements Runnable {
         this.pathForDictionary = pathForDictionary;
     }
 
+    /**
+     * merging the temporary files to posting files
+     */
     public void MergeTemporaryFile(){
         try {
             Map<String, LinkedList<String>> mergedFile = new HashMap<>();
@@ -50,6 +56,7 @@ public class IndexerMerging implements Runnable {
             for (String key:
                     sortedMap ) {
                 content.append(key+" = "+"|df="+mergedFile.get(key).size()+"|"+mergedFile.get(key).toString()+"\n");
+
                 allVoc.append(key+"="+mergedFile.get(key).size()+"\n");
             }
 
@@ -80,7 +87,13 @@ public class IndexerMerging implements Runnable {
             }
         }catch (Exception e){ System.err.println(e);}
     }
-    public static void summaryAllDictionaryWords(Path pathForDictionary , Path pathForAllDictionaryWithFileNmae){
+
+    /**
+     * merge all dictionaries to one big one.
+     * @param pathForDictionary - path for folder that contains all small dictionaries
+     * @param pathForAllDictionaryWithFileName- path for new one big dictionary
+     */
+    public static void summaryAllDictionaryWords(Path pathForDictionary , Path pathForAllDictionaryWithFileName){
 
         for(int i=0 ; i<27 ;i++){
             FileInputStream fi;
@@ -96,7 +109,7 @@ public class IndexerMerging implements Runnable {
 
 
             try (OutputStream out = new BufferedOutputStream(
-                    Files.newOutputStream(pathForAllDictionaryWithFileNmae , CREATE,APPEND))) {
+                    Files.newOutputStream(pathForAllDictionaryWithFileName , CREATE,APPEND))) {
                 out.write(array, 0, array.length);
                 out.flush();
             } catch (IOException x) {

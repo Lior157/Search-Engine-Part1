@@ -17,6 +17,9 @@ import java.util.concurrent.ThreadPoolExecutor;
 import static java.nio.file.StandardOpenOption.APPEND;
 import static java.nio.file.StandardOpenOption.CREATE;
 
+/**
+ * this class responsiable for indexing process, and making a posting & dictionary files
+ */
 public class Indexer {
     private Map<String , Map<Integer,Integer>> Voc ;
     private LinkedList<String> fileMeta_data;
@@ -26,13 +29,15 @@ public class Indexer {
     private Parse parser;
     private  static volatile Path pathData ;
     private LinkedList<Pair<String,String>>[] AB_words;
-//    private static volatile Object[] AB_wordsLook = clearLookArray();
     private static volatile Object lookWriteDocsInformationFile = new Object();
     private static volatile Integer writingId = 1 ;
     private static volatile Object lookIncreaseWritingId  = new Object();
     private static volatile Path[] pathsTemporaryFiles;
     private static volatile boolean  pathesTemporaryFilesExist = false;
 
+    /**
+     * initialaze static variables
+     */
     public static void initialazleVariable(){
         lookIncrease  = new Object();
         fileNumber = 1 ;
@@ -42,6 +47,11 @@ public class Indexer {
         pathesTemporaryFilesExist = false;
     }
 
+    /**
+     *
+     * @param path for indexer output location
+     * @param corpus of the corpus
+     */
     public Indexer(Path path,String corpus){
         parser =new Parse(corpus);
         this.pathData=path;
@@ -52,11 +62,14 @@ public class Indexer {
         Voc = new HashMap<>();
     }
 
+    /**
+     * difine temporary directory pathes
+     * @return Path[] of all pathes of temporary directories
+     */
     private Path[] PathesTemporaryFiles(){
         Path[] pathes  = new Path[27];
         String st;
         new File("TemporaryFiles").mkdirs();
-    //    System.out.println("e: ");
         for (int i=0 ; i<27 ; i++){
             if(i == 26){
                 st = pathData.toString() + "//TemporaryFiles//number&sign";
@@ -70,20 +83,21 @@ public class Indexer {
         return pathes;
     }
 
+    /**
+     * clear all Lists of temparapy files structure
+     */
     private void clearLinkedListArray(){
         for ( int i=0 ; i<AB_words.length ;i++){
             AB_words[i] = new LinkedList();
         }
     }
 
-    private static Object[] clearLookArray(){
-        Object[] AB_wordsLook = new Object[27];
-        for ( int i=0 ; i<AB_wordsLook.length ;i++){
-            AB_wordsLook[i] = new Object();
-        }
-        return AB_wordsLook;
-    }
-
+    /**
+     * general function of this class, receving a document and start the analization of the document.
+     * every 10000 docs or last cycle
+     * @param All_docs
+     * @param endWriting
+     */
     public void WriteData(Elements All_docs ,boolean endWriting) {
         if(endWriting){
             ManageWritingInformation( 0 , endWriting);
@@ -126,6 +140,14 @@ public class Indexer {
             ManageWritingInformation(local_file_num ,false);
         }
     }
+
+    /**
+     * every 10,000 docs or last doc cycle start:
+     * making a sort of words according to first char of the word and set the word to right list.
+     * start writing word temporary stuctures to the disk.
+     * @param local_file_num last number of excuted document
+     * @param endWriting indecate the last cycle of information, means - must write to disk all stayed information
+     */
     private void ManageWritingInformation(int local_file_num,boolean endWriting){
 
             if(fileIteration>=10000 || endWriting){
@@ -148,13 +170,21 @@ public class Indexer {
                     }
                 }
                 fileIteration = 0 ;
-                writePostingFile();
+                writeTemporaryPostingFile();
                 Voc = new HashMap<>();
 
 
             }
         }
 
+    /**
+     * merging and sorting all temporary folders to posting files
+     * @param folder
+     * @param mergedFilesFolder
+     * @param fileIndexing
+     * @param pathForAllDictionary
+     * @param pathForAllDictionaryWithFileNmae
+     */
     public static void MergeTemporaryFile(File folder  , Path mergedFilesFolder ,File fileIndexing, Path pathForAllDictionary , Path pathForAllDictionaryWithFileNmae){
         new File(mergedFilesFolder.toString()).mkdirs();
         System.out.println("size:"+folder.listFiles().length);
@@ -187,6 +217,10 @@ public class Indexer {
         System.out.println("finished");
     }
 
+    /**
+     * sort the file of "files information' by increasing order number
+     * @param file
+     */
     public static void SortIndexingToFiles(File file){
         try {
             String text = new String(Files.readAllBytes(file.toPath()));
@@ -219,8 +253,10 @@ public class Indexer {
         }
     }
 
-
-    public void writePostingFile(){
+    /**
+     * writing to the disk the temporary data
+     */
+    public void writeTemporaryPostingFile(){
         if(! pathesTemporaryFilesExist){
             synchronized (lookIncreaseWritingId) {
                 if (! pathesTemporaryFilesExist){

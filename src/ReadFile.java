@@ -94,19 +94,17 @@ public class ReadFile implements Runnable{
                     }
                 }
                 if(check) {
-                    readFile(fileEntry.toPath(), fileEntry.getName());
+                    readFile(fileEntry.toPath());
                 }
-            //    System.out.println(fileEntry.getName());
             }
         }
     }
 
     /**
      * @param file The path to the file that needs reading
-     * @param fileName The file name that needs reading
      * This function reads the file and writes his data
      */
-    public void readFile(Path file ,String fileName) {
+    public void readFile(Path file) {
 
 
         try {
