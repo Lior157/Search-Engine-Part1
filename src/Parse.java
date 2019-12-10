@@ -256,6 +256,7 @@ public class Parse {
             entity += word;
             if(endsOrStarts.contains(String.valueOf(entity.charAt(entity.length()-1)))){
                 entity=CleanWord(entity);
+                if(!stopWords.contains(word)&&!stopWords.contains(word.toLowerCase())&&!stopWords.contains(word.substring(0,1).toUpperCase()+word.toLowerCase().substring(1))) //checks if the word is a Stop Word
                 AddToData(entity,false);
                 return entity;
             }
@@ -264,15 +265,19 @@ public class Parse {
         else
             return null;
         for (int i = indexDoc+1;Character.isUpperCase(getFromText(i).charAt(0)) ; i++) {
-            entity = entity + " " + getFromText(i);
+            word=getFromText(i);
+            entity = entity + " " + word;
             size=i-indexDoc+1;
             if(endsOrStarts.contains(String.valueOf(entity.charAt(entity.length()-1)))){
                 entity=CleanWord(entity);
-                AddToData(CleanWord(getFromText(i)),false);
+                word=CleanWord(word);
+                if(!stopWords.contains(word)&&!stopWords.contains(word.toLowerCase())&&!stopWords.contains(word.substring(0,1).toUpperCase()+word.toLowerCase().substring(1))) //checks if the word is a Stop Word
+                    AddToData(word,false);
                 this.indexDoc+=size-1;
                 return entity;
             }
-            AddToData(getFromText(i),false);
+            if(!stopWords.contains(word)&&!stopWords.contains(word.toLowerCase())&&!stopWords.contains(word.substring(0,1).toUpperCase()+word.toLowerCase().substring(1))) //checks if the word is a Stop Word
+                AddToData(word,false);
         }
         if(size==1)
             return null;
