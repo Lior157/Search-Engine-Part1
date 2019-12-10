@@ -13,8 +13,8 @@ public class MainFileCreation {
 
     public static void main(String[] args) {
         PostingBuild pf = new PostingFiles();
-        Path corpus = Paths.get("D:\\מסמכים\\לימודים\\שנה ג\\איחזור\\corpus");
-        Path indexPlace = Paths.get("D:\\מסמכים\\לימודים\\שנה ג\\איחזור\\test666");
+        Path corpus = Paths.get("C:\\Users\\Aviel\\corpus");
+        Path indexPlace = Paths.get("C:\\Users\\Aviel\\Test1");
 
         ///// build indexing
         String[] ans = pf.startBuildingStock(indexPlace , corpus);

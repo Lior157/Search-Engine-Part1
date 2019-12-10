@@ -258,9 +258,9 @@ public class Parse {
                 entity=CleanWord(entity);
                 if(!stopWords.contains(word)&&!stopWords.contains(word.toLowerCase())&&!stopWords.contains(word.substring(0,1).toUpperCase()+word.toLowerCase().substring(1))) //checks if the word is a Stop Word
                 AddToData(entity,false);
-                return entity;
             }
-            AddToData(entity,false);
+            if(!stopWords.contains(word)&&!stopWords.contains(word.toLowerCase())&&!stopWords.contains(word.substring(0,1).toUpperCase()+word.toLowerCase().substring(1))) //checks if the word is a Stop Word
+                AddToData(entity,false);
         }
         else
             return null;
@@ -295,17 +295,20 @@ public class Parse {
         String number=null;
         if (words.length==1)
             return null;
-        else if(words.length>=3)
+        else if(words.length>=3) {
+            for (String word:words) {
+                text.add(word);
+            }
             return getFromText(indexDoc);
+        }
         else if(words.length==2){
-            text.add(indexDoc,words[0]);
-            text.add(indexDoc+1,words[1]);
+            text.add(words[0]);
+            text.add(words[1]);
             String ans1=words[0],ans2=words[1];
             if(checkIfTermHasConnectionToNumber(indexDoc)!=null)
                 ans1=getNumber(indexDoc);
             if(checkIfTermHasConnectionToNumber(indexDoc+1)!=null)
                 ans2=getNumber(indexDoc+1);
-            this.indexDoc+=2;
             return ans1+"-"+ans2;
         }
         else

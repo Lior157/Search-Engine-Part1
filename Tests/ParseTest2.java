@@ -198,14 +198,14 @@ public class ParseTest2 {
         text="May 1994";
         ls=printTest(text);
         assertTrue(ls.contains("1994-05"));
-        text="MAY 1994";
+        text="May 1994";
         ls=printTest(text);
         assertTrue(ls.contains("1994-05"));
 
 
     }
     private LinkedList<String> printTest(String text){
-        Parse pr = new Parse("C:\\Users\\Aviel\\IdeaProjects\\IR2\\corpus\\corpus");
+        Parse pr = new Parse("C:\\Users\\Aviel\\corpus");
 
         Map<String,Integer> l = pr.parseIt(text);
         Iterator<String> it = l.keySet().iterator();
