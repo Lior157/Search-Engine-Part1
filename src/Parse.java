@@ -44,6 +44,14 @@ public class Parse {
 
         for(indexDoc=0 ; indexDoc< this.text.size() ;indexDoc++){
             String str;
+
+
+            str=IsRange(indexDoc);
+            if(str!=null){  //checks if the word is under the Range rule
+                AddToData(str,false);
+                continue;
+            }
+
             str=IsEntity(indexDoc);
             if(str!=null){   //checks if the word is an entity
                 if(entities.get(str)!=null)
@@ -55,11 +63,6 @@ public class Parse {
             this.text.set(indexDoc,CleanWord(getFromText(indexDoc)));  //cleans the word from start and end
             if(this.text.get(indexDoc).length()==0)
                 continue;
-            str=IsRange(indexDoc);
-            if(str!=null){  //checks if the word is under the Range rule
-                AddToData(str,false);
-                continue;
-            }
             str=isBetween(indexDoc);
             if(str!=null){
                 AddToData(str,false);
@@ -252,20 +255,19 @@ public class Parse {
         String entity="";
         String word=getFromText(indexDoc);
         int size=1;
-        if(Character.isUpperCase(word.charAt(0))) {
+        if(Character.isUpperCase(word.charAt(0))&&Character.isUpperCase(getFromText(indexDoc+1).charAt(0))) {
             entity += word;
-            if(endsOrStarts.contains(String.valueOf(entity.charAt(entity.length()-1)))){
-                entity=CleanWord(entity);
-                if(!stopWords.contains(word)&&!stopWords.contains(word.toLowerCase())&&!stopWords.contains(word.substring(0,1).toUpperCase()+word.toLowerCase().substring(1))) //checks if the word is a Stop Word
-                AddToData(entity,false);
-            }
-            if(!stopWords.contains(word)&&!stopWords.contains(word.toLowerCase())&&!stopWords.contains(word.substring(0,1).toUpperCase()+word.toLowerCase().substring(1))) //checks if the word is a Stop Word
+            if(endsOrStarts.contains(String.valueOf(entity.charAt(entity.length()-1))))
+                return null;
+            else if(!stopWords.contains(word)&&!stopWords.contains(word.toLowerCase())&&!stopWords.contains(word.substring(0,1).toUpperCase()+word.toLowerCase().substring(1))) //checks if the word is a Stop Word
                 AddToData(entity,false);
         }
         else
             return null;
         for (int i = indexDoc+1;Character.isUpperCase(getFromText(i).charAt(0)) ; i++) {
             word=getFromText(i);
+            if(IsRange(i)!=null)
+                return null;
             entity = entity + " " + word;
             size=i-indexDoc+1;
             if(endsOrStarts.contains(String.valueOf(entity.charAt(entity.length()-1)))){
@@ -290,25 +292,33 @@ public class Parse {
      * @return The range term
      */
     private String IsRange(int indexDoc){
-      //  System.out.println("c: "+getFromText(indexDoc));
-        String[]words=getFromText(indexDoc).split("-");
-        String number=null;
+        String w=CleanWord(getFromText(indexDoc));
+        if(w.length()<1)
+            return null;
+        String[]words=w.split("-");
         if (words.length==1)
             return null;
         else if(words.length>=3) {
             for (String word:words) {
-                text.add(word);
+                word=CleanWord(word);
+                if(word.length()<1)
+                    continue;
+                if(!stopWords.contains(word)&&!stopWords.contains(word.toLowerCase())&&!stopWords.contains(word.substring(0,1).toUpperCase()+word.toLowerCase().substring(1))) //checks if the word is a Stop Word
+                AddToData(word,false);
             }
-            return getFromText(indexDoc);
+            return CleanWord(getFromText(indexDoc));
         }
         else if(words.length==2){
-            text.add(words[0]);
-            text.add(words[1]);
             String ans1=words[0],ans2=words[1];
-            if(checkIfTermHasConnectionToNumber(indexDoc)!=null)
-                ans1=getNumber(indexDoc);
+            if(checkIfTermHasConnectionToNumber(indexDoc)!=null) {
+                ans1 = getNumber(indexDoc);
+            }
             if(checkIfTermHasConnectionToNumber(indexDoc+1)!=null)
                 ans2=getNumber(indexDoc+1);
+            if(!stopWords.contains(words[0])&&!stopWords.contains(words[0].toLowerCase())&&!stopWords.contains(words[0].substring(0,1).toUpperCase()+words[0].toLowerCase().substring(1))) //checks if the word is a Stop Word
+            AddToData(words[0],false);
+            if(!stopWords.contains(words[1])&&!stopWords.contains(words[1].toLowerCase())&&!stopWords.contains(words[1].substring(0,1).toUpperCase()+words[1].toLowerCase().substring(1))) //checks if the word is a Stop Word
+            AddToData(words[1],false);
             return ans1+"-"+ans2;
         }
         else
@@ -324,6 +334,8 @@ public class Parse {
         StringBuilder number = new StringBuilder();
         int i = 0;
         int counter = 0 ;
+        if(term.equals("."))
+            return null;
         for (char c:
                 term.toCharArray()) {
             if((((int)c) >= 48 && ((int)c)<=57) || c==',' || c=='.' || c=='/'){

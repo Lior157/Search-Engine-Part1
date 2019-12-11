@@ -201,6 +201,9 @@ public class ParseTest2 {
         text="May 1994";
         ls=printTest(text);
         assertTrue(ls.contains("1994-05"));
+        text="Dani.. !Dan!# @Day-to-big-stay";
+        ls=printTest(text);
+        assertTrue(ls.contains("1994-05"));
 
 
     }
