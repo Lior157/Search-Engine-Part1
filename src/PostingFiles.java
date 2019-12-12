@@ -2,6 +2,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashSet;
 
 public class PostingFiles implements PostingBuild{
 
@@ -19,7 +20,11 @@ public class PostingFiles implements PostingBuild{
     public String[] startBuildingStock(Path folderForFiles , Path CorpusPath ){
         String[] messages = new String[2];
         long startTime;
+
         //------------------------------------------- withStemming
+        Parse.atomicInteger.set(0);
+        Parse.hsNumber=new HashSet<>();
+        Parse.look=new Object();
         startTime = System.currentTimeMillis();
         Parse.TurnOnStem();
         ReadFile.initialazleVariable(CorpusPath.toString());
@@ -28,7 +33,11 @@ public class PostingFiles implements PostingBuild{
         buildInvertedFiles(withStem ,  CorpusPath);
         messages[0]="Number of Indexed files:"+Indexer.getNumberOfIndexedDocs()+"\nNumer of Quniqe terms:"+IndexerMerging.NumberOfQniqueTerms()+
                 "\nProcess time:"+((System.currentTimeMillis()-startTime)/1000)+" sec";
+        Integer numberOfNumbersWithTreads = Parse.atomicInteger.get();
         //-------------------------------------------- withoutStemming
+         Parse.atomicInteger.set(0);
+        Parse.hsNumber=new HashSet<>();
+        Parse.look=new Object();
         startTime = System.currentTimeMillis();
         Parse.TurnOffStem();
         ReadFile.initialazleVariable(CorpusPath.toString());
@@ -38,6 +47,10 @@ public class PostingFiles implements PostingBuild{
         messages[1]="Number of Indexed files:"+Indexer.getNumberOfIndexedDocs()+"\nNumer of Quniqe terms:"+IndexerMerging.NumberOfQniqueTerms()+
                 "\nProcess time:"+((System.currentTimeMillis()-startTime)/1000)+" sec";
 
+        Integer numberOfNumbersWithoutTreads = Parse.atomicInteger.get();
+        System.out.println(
+                "with :"+ numberOfNumbersWithTreads+"\n without :"+numberOfNumbersWithoutTreads
+        );
         return messages;
     }
 

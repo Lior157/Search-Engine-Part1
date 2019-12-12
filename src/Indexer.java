@@ -78,7 +78,7 @@ public class Indexer {
             }
             pathes[i] = Paths.get(st);
             new File(pathes[i].toString()).mkdirs();
-            System.out.println("e: "+pathes[i].toString());
+        //    System.out.println("e: "+pathes[i].toString());
         }
         return pathes;
     }
@@ -115,8 +115,8 @@ public class Indexer {
             Elements title = doc.getElementsByTag("TI");
             Elements date = doc.getElementsByTag("DATE1");
             Elements docno = doc.getElementsByTag("DOCNO");
+            Map<String, Integer> mp = parser.parseIt(doc.getElementsByTag("TEXT").text());
 
-            Map<String, Integer> mp = parser.parseIt(doc.text());
 
             int max_tf = 0;
             String[] it = mp.keySet().toArray(new String[mp.size()]);
@@ -188,18 +188,18 @@ public class Indexer {
     public static void MergeTemporaryFile(File folder  , Path mergedFilesFolder ,File fileIndexing, Path pathForAllDictionary , Path pathForAllDictionaryWithFileNmae){
         IndexerMerging.initialazleVariable();
         new File(mergedFilesFolder.toString()).mkdirs();
-        System.out.println("size:"+folder.listFiles().length);
+       // System.out.println("size:"+folder.listFiles().length);
         ExecutorService tpex = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()/2);
         for (final File fileEntry : folder.listFiles()) {
             if(fileEntry.isDirectory()){
-                System.out.println("path:" + fileEntry.getPath());
+             //   System.out.println("path:" + fileEntry.getPath());
                 if(fileEntry.getName().length() > 1){
                     Thread t = new Thread(new IndexerMerging(fileEntry , 26 , mergedFilesFolder,pathForAllDictionary));
                     tpex.execute(t);
                  //   t.start();
                 }else {
                     int firstNumberOfName = (int) fileEntry.getName().charAt(0);
-                    System.out.println(firstNumberOfName);
+            //        System.out.println(firstNumberOfName);
                     if (firstNumberOfName >= 97 && firstNumberOfName <= 122) {
                         Thread t = new Thread(new IndexerMerging(fileEntry, firstNumberOfName - 97, mergedFilesFolder,pathForAllDictionary));
                         //  t.start();
@@ -209,24 +209,24 @@ public class Indexer {
                 }
             }
         }
-        SortIndexingToFiles(fileIndexing);
+        SortIndexingToFiles(fileIndexing , mergedFilesFolder);
         tpex.shutdown();
         while (!tpex.isTerminated()){
             Thread.yield();
         }
         IndexerMerging.summaryAllDictionaryWords(pathForAllDictionary ,pathForAllDictionaryWithFileNmae);
-        System.out.println("finished");
+      //  System.out.println("finished");
     }
 
     /**
      * sort the file of "files information' by increasing order number
      * @param file
      */
-    public static void SortIndexingToFiles(File file){
+    public static void SortIndexingToFiles(File file , Path mergedFilesFolder){
         try {
             String text = new String(Files.readAllBytes(file.toPath()));
             String[] splitedLinesInput = text.split("\n");
-            System.out.println(splitedLinesInput.length);
+         //   System.out.println(splitedLinesInput.length);
             String[] output = new String[splitedLinesInput.length] ;
             for (int i = 0 ; i < splitedLinesInput.length ; i++){
                 try {
@@ -238,7 +238,7 @@ public class Indexer {
                 }
             }
 
-            Path pathForSaving = Paths.get(file.toString().substring(0,file.toString().indexOf("."))+"Analayzed.txt");
+            Path pathForSaving = Paths.get(mergedFilesFolder.toString()+"//id_toDcoc.txt");
             String listString = String.join("\n", output );
             byte data[] = listString.getBytes();
 
@@ -277,7 +277,7 @@ public class Indexer {
             }
 
             String path = pathsTemporaryFiles[index].toString()+"//"+numberOfWriting;
-            System.out.println(path);
+          //  System.out.println(path);
 
             try {
                 FileOutputStream f = new FileOutputStream(new File(path));

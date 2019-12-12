@@ -25,7 +25,6 @@ public class IndexerMerging implements Runnable {
         this.index = index;
         this.mergedFilesFolder = mergedFilesFolder;
         this.pathForDictionary = pathForDictionary;
-        numberOfQniqueTerms=0;
     }
     /**
      * initialaze static variables
@@ -98,7 +97,8 @@ public class IndexerMerging implements Runnable {
                 st = mergedFilesFolder.toString() + "//@"  + ((char)(index+97)+".txt");
             }
             Path p = Paths.get(st);
-            System.out.println(p);
+          //
+            //  System.out.println(p);
             byte data[] = content.toString().getBytes();
             try (OutputStream out = new BufferedOutputStream(
                     Files.newOutputStream(p, CREATE))) {

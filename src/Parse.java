@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
 public class Parse {
@@ -15,7 +16,9 @@ public class Parse {
     private static volatile boolean stem;
     private HashSet<String> endsOrStarts;
     public Map<String,Integer> entities;
-
+//    public static volatile AtomicInteger atomicInteger = new AtomicInteger();
+//    public static volatile HashSet<String> hsNumber = new HashSet();
+//    public static volatile Object look = new Object();
 
     public Parse(String corpus){
         add_stopWords(corpus);
@@ -70,7 +73,7 @@ public class Parse {
             }
             str=IsDate(indexDoc);
             if(str!=null){  //checks if the word is a date
-                AddToData(str,false);
+                AddToData(str,true);
                 continue;
             }
             if(checkIfTermHasConnectionToNumber(indexDoc)!=null){
@@ -82,9 +85,6 @@ public class Parse {
             }
             if(stopWords.contains(getFromText(indexDoc))||stopWords.contains(getFromText(indexDoc).toLowerCase())||stopWords.contains(getFromText(indexDoc).substring(0,1).toUpperCase()+getFromText(indexDoc).toLowerCase().substring(1))) //checks if the word is a Stop Word
                 continue;
-            if(stem) //if the stem is on, stem the word
-                AddToData(StemWord(getFromText(indexDoc)),false);
-            else
                 AddToData(getFromText(indexDoc),false);
         }
       //  System.out.println(DATA);
@@ -104,7 +104,7 @@ public class Parse {
             return word;
         }
         else
-            AddToData(word,false);
+            AddToData(word,true);
         return "";
 
     }
@@ -186,6 +186,8 @@ public class Parse {
      * This function adds the term after processing to the map that gets sent to the Indexer
      */
     private void AddToData(String word,boolean number){
+        if(stem)
+            word=StemWord(word);
         if(word.equals(" ")|| word.length()==0){
             return;
         }
@@ -241,8 +243,9 @@ public class Parse {
             return str;
 
         str = this.IsNumber(index);
-        if (str != null)
+        if (str != null) {
             return str;
+        }
 
         return null;
     }
