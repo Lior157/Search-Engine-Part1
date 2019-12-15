@@ -64,6 +64,18 @@ public class IndexerMerging implements Runnable {
             int tempNumberOfQnique=0;
             for (String key:
                     sortedMap ) {
+                if(key.split(" ").length>1 ){
+                    boolean isEntity = true;
+                    for(String word : key.split(" ")){
+                        if( !( word.charAt(0)>= 65 && word.charAt(0)<=90) ){
+                            isEntity=false;
+                        }
+                    }
+                    if( isEntity && mergedFile.get(key).size()<2 ){
+                     //   System.out.println(key+"="+mergedFile.get(key).size());
+                        continue;
+                    }
+                }
                 content.append(key+" = "+"|df="+mergedFile.get(key).size()+"|"+mergedFile.get(key).toString()+"\n");
 
                 LinkedList<String> listOfTermAppearence = mergedFile.get(key);
@@ -83,7 +95,6 @@ public class IndexerMerging implements Runnable {
                     }
 
                 }
-
 
                 allVoc.append(key+"="+number_of_appearence+"\n");
                 tempNumberOfQnique++;

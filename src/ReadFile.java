@@ -20,11 +20,11 @@ public class ReadFile implements Runnable{
 
     private Path pathData;
 
-    private File folder ;
+    private File Corpusfolder ;
     private static volatile ConcurrentHashMap<String,Integer> filesExecuted = new ConcurrentHashMap<>();
     private static volatile Object lookClean  = new Object();
     private static volatile boolean cleanfile = true;
-    private Indexer ind ;
+    private IndexerInterface ind ;
     private static String corpusPath;
 
 
@@ -41,10 +41,10 @@ public class ReadFile implements Runnable{
 
     /**
      * @param pathData The path to the dictionary location folder
-     * @param folder
+     * @param Corpusfolder for corpus
      * This constructor initializes and object
      */
-    public ReadFile(Path pathData , final File folder) {
+    public ReadFile(Path pathData , final File Corpusfolder , ParseInterface parser) {
             synchronized (lookClean) {
                 if (cleanfile) {
                     cleanfile = false;
@@ -59,7 +59,9 @@ public class ReadFile implements Runnable{
             }
         new File(pathData.toString()).mkdirs();
         this.pathData = pathData;
-        this.folder = folder;
+        this.Corpusfolder = Corpusfolder;
+
+        this.ind = new Indexer(pathData,corpusPath , parser);
     }
 
     /**
@@ -134,8 +136,7 @@ public class ReadFile implements Runnable{
 
     @Override
     public void run() {
-       this.ind = new Indexer(pathData,corpusPath);
-        listFilesForFolder(folder);
+        listFilesForFolder(Corpusfolder);
         ind.WriteData(null , true);
     }
 }

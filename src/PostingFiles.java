@@ -22,9 +22,7 @@ public class PostingFiles implements PostingBuild{
         long startTime;
 
         //------------------------------------------- withStemming
-        Parse.atomicInteger.set(0);
-        Parse.hsNumber=new HashSet<>();
-        Parse.look=new Object();
+
         startTime = System.currentTimeMillis();
         Parse.TurnOnStem();
         ReadFile.initialazleVariable(CorpusPath.toString());
@@ -33,11 +31,7 @@ public class PostingFiles implements PostingBuild{
         buildInvertedFiles(withStem ,  CorpusPath);
         messages[0]="Number of Indexed files:"+Indexer.getNumberOfIndexedDocs()+"\nNumer of Quniqe terms:"+IndexerMerging.NumberOfQniqueTerms()+
                 "\nProcess time:"+((System.currentTimeMillis()-startTime)/1000)+" sec";
-        Integer numberOfNumbersWithTreads = Parse.atomicInteger.get();
         //-------------------------------------------- withoutStemming
-         Parse.atomicInteger.set(0);
-        Parse.hsNumber=new HashSet<>();
-        Parse.look=new Object();
         startTime = System.currentTimeMillis();
         Parse.TurnOffStem();
         ReadFile.initialazleVariable(CorpusPath.toString());
@@ -47,10 +41,7 @@ public class PostingFiles implements PostingBuild{
         messages[1]="Number of Indexed files:"+Indexer.getNumberOfIndexedDocs()+"\nNumer of Quniqe terms:"+IndexerMerging.NumberOfQniqueTerms()+
                 "\nProcess time:"+((System.currentTimeMillis()-startTime)/1000)+" sec";
 
-        Integer numberOfNumbersWithoutTreads = Parse.atomicInteger.get();
-        System.out.println(
-                "with :"+ numberOfNumbersWithTreads+"\n without :"+numberOfNumbersWithoutTreads
-        );
+
         return messages;
     }
 
@@ -71,7 +62,7 @@ public class PostingFiles implements PostingBuild{
         Thread[] threads = new Thread[cores];
         System.out.println(cores);
         for(int i=0 ; i< threads.length ;i++) {
-            threads[i] = new Thread(new ReadFile(p ,folder));
+            threads[i] = new Thread(new ReadFile(p ,folder,new Parse(CorpusPath.toString())));
             threads[i].start();
         }
         try {

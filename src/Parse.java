@@ -8,14 +8,13 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
-public class Parse {
+public class Parse implements ParseInterface{
     private Map<String,Integer> DATA ;
     private ArrayList<String> text; //List of document words without stop words or blank spaces.
     private HashSet<String> stopWords;
     private int indexDoc ;
     private static volatile boolean stem;
     private HashSet<String> endsOrStarts;
-    public Map<String,Integer> entities;
 //    public static volatile AtomicInteger atomicInteger = new AtomicInteger();
 //    public static volatile HashSet<String> hsNumber = new HashSet();
 //    public static volatile Object look = new Object();
@@ -34,7 +33,6 @@ public class Parse {
         /*run on each file text - remove stop words ,parse it(and increases number of appearances), stems it , data analysis(the term with the most appearances,number of all terms,*/
         String[] str2 = text.split("[:\\s\\r?\\n]+");
         DATA = new HashMap<>();
-        entities=new HashMap<>();
         this.text = new ArrayList<>();
         for(int i=0 ; i<str2.length ;i++) {
             if(str2[i].equals("U.S.")) {  //checks a single case of word that falls after cleaning
@@ -57,10 +55,7 @@ public class Parse {
 
             str=IsEntity(indexDoc);
             if(str!=null){   //checks if the word is an entity
-                if(entities.get(str)!=null)
-                    entities.put(str,entities.get(str)+1);
-                else
-                    entities.put(str,1);
+                AddToData(str,false);
                 continue;
             }
             this.text.set(indexDoc,CleanWord(getFromText(indexDoc)));  //cleans the word from start and end
@@ -620,7 +615,6 @@ public class Parse {
         }
         return true;
     }
-
 
     /**
      * @param index The current index of the separated text

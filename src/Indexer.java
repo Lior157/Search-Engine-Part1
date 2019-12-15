@@ -20,13 +20,13 @@ import static java.nio.file.StandardOpenOption.CREATE;
 /**
  * this class responsiable for indexing process, and making a posting & dictionary files
  */
-public class Indexer {
+public class Indexer implements IndexerInterface{
     private Map<String , Map<Integer,Integer>> Voc ;
     private LinkedList<String> fileMeta_data;
     private int fileIteration ;
     private static volatile Object lookIncrease  = new Object();
     private static volatile Integer fileNumber = 1 ;
-    private Parse parser;
+    private ParseInterface parser;
     private  static volatile Path pathData ;
     private LinkedList<Pair<String,String>>[] AB_words;
     private static volatile Object lookWriteDocsInformationFile = new Object();
@@ -52,8 +52,8 @@ public class Indexer {
      * @param path for indexer output location
      * @param corpus of the corpus
      */
-    public Indexer(Path path,String corpus){
-        parser =new Parse(corpus);
+    public Indexer(Path path,String corpus , ParseInterface parser){
+        this.parser = parser;
         this.pathData=path;
         fileIteration=0;
         AB_words = new LinkedList[27];
@@ -112,6 +112,7 @@ public class Indexer {
                 fileNumber++;
              //   System.out.println("local:"+local_file_num);
             }
+
             Elements title = doc.getElementsByTag("TI");
             Elements date = doc.getElementsByTag("DATE1");
             Elements docno = doc.getElementsByTag("DOCNO");
@@ -238,7 +239,7 @@ public class Indexer {
                 }
             }
 
-            Path pathForSaving = Paths.get(mergedFilesFolder.toString()+"//id_toDcoc.txt");
+            Path pathForSaving = Paths.get(mergedFilesFolder.toString()+"//id_toDoc.txt");
             String listString = String.join("\n", output );
             byte data[] = listString.getBytes();
 
@@ -257,7 +258,7 @@ public class Indexer {
     /**
      * writing to the disk the temporary data
      */
-    public void writeTemporaryPostingFile(){
+    private void writeTemporaryPostingFile(){
         if(! pathesTemporaryFilesExist){
             synchronized (lookIncreaseWritingId) {
                 if (! pathesTemporaryFilesExist){

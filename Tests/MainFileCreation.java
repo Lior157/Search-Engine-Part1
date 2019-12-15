@@ -14,9 +14,9 @@ public class MainFileCreation {
     public static void main(String[] args) {
 
         PostingBuild pf = new PostingFiles();
-        pf.deleteFolderInformation(Paths.get("D:\\מסמכים\\לימודים\\שנה ג\\איחזור\\officail_test2"));
+        pf.deleteFolderInformation(Paths.get("D:\\מסמכים\\לימודים\\שנה ג\\איחזור\\fbi3"));
         Path corpus = Paths.get("D:\\מסמכים\\לימודים\\שנה ג\\איחזור\\corpus");
-        Path indexPlace = Paths.get("D:\\מסמכים\\לימודים\\שנה ג\\איחזור\\officail_test2");
+        Path indexPlace = Paths.get("D:\\מסמכים\\לימודים\\שנה ג\\איחזור\\fbi3");
 
         ///// build indexing
         String[] ans = pf.startBuildingStock(indexPlace , corpus);
