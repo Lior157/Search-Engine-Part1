@@ -62,23 +62,37 @@ public class IndexerMerging implements Runnable {
             StringBuilder allVoc = new StringBuilder();
           //  String[] it = sortedMap.toArray(new String[mergedFile.size()]);
             int tempNumberOfQnique=0;
-            for (String key:
-                    sortedMap ) {
-                if(key.split(" ").length>1 ){
+            for (int i=0; i<sortedMap.size();i++ ) {
+                String key = sortedMap.get(i);
+                String[] terms = key.split(" ") ;
+                if(terms.length>1 ){
                     boolean isEntity = true;
-                    for(String word : key.split(" ")){
+                    for(String word : terms ){
                         if( !( word.charAt(0)>= 65 && word.charAt(0)<=90) ){
                             isEntity=false;
                         }
                     }
                     if( isEntity && mergedFile.get(key).size()<2 ){
-                     //   System.out.println(key+"="+mergedFile.get(key).size());
+                        //   System.out.println(key+"="+mergedFile.get(key).size());
                         continue;
                     }
                 }
-                content.append(key+" = "+"|df="+mergedFile.get(key).size()+"|"+mergedFile.get(key).toString()+"\n");
-
-                LinkedList<String> listOfTermAppearence = mergedFile.get(key);
+                LinkedList<String> listOfTermAppearence;
+                if(( i<sortedMap.size()-1 )&& key.toLowerCase().equals(sortedMap.get(i+1).toLowerCase())){
+                    String key2 = sortedMap.get(i+1);
+                    int size = mergedFile.get(key).toString().split("=").length +
+                            mergedFile.get(key2).toString().split("=").length-2 ;
+                    String list = mergedFile.get(key).toString()+mergedFile.get(key2).toString();
+                    content.append(key.toLowerCase() + " = " + "|df=" + size + "|" + list+ "\n");
+                    i++;
+                    listOfTermAppearence = mergedFile.get(key);
+                    listOfTermAppearence.addAll(mergedFile.get(key2));
+                    key = key.toLowerCase();
+                }else {
+                    int size = mergedFile.get(key).toString().split("=").length-1;
+                    content.append(key + " = " + "|df=" + size + "|" + mergedFile.get(key).toString() + "\n");
+                    listOfTermAppearence = mergedFile.get(key);
+                }
                 int number_of_appearence = 0;
                 for(String appear : listOfTermAppearence){
                     String[] pairs = appear.split(",");

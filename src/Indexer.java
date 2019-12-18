@@ -197,15 +197,11 @@ public class Indexer implements IndexerInterface{
                 if(fileEntry.getName().length() > 1){
                     Thread t = new Thread(new IndexerMerging(fileEntry , 26 , mergedFilesFolder,pathForAllDictionary));
                     tpex.execute(t);
-                 //   t.start();
                 }else {
                     int firstNumberOfName = (int) fileEntry.getName().charAt(0);
-            //        System.out.println(firstNumberOfName);
                     if (firstNumberOfName >= 97 && firstNumberOfName <= 122) {
                         Thread t = new Thread(new IndexerMerging(fileEntry, firstNumberOfName - 97, mergedFilesFolder,pathForAllDictionary));
-                        //  t.start();
                         tpex.execute(t);
-                        //   tpex.submit(new IndexerMerging(fileEntry , 26 , mergedFilesFolder));
                     }
                 }
             }
