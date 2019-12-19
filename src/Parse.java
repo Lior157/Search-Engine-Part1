@@ -141,7 +141,7 @@ public class Parse implements ParseInterface{
         stopWords=new HashSet<>();
         try
         {
-            BufferedReader reader = new BufferedReader(new FileReader(corpus+"/stop words 05.txt"));
+            BufferedReader reader = new BufferedReader(new FileReader(corpus+"/stop_words.txt"));
             String line;
             while ((line = reader.readLine()) != null)
             {
