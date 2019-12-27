@@ -1,6 +1,8 @@
+import javafx.beans.binding.StringBinding;
 import javafx.util.Pair;
 
 import java.io.*;
+import java.lang.reflect.Array;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -19,6 +21,7 @@ public class IndexerMerging implements Runnable {
     private final Path pathForDictionary;
     private static volatile Integer numberOfQniqueTerms;
     private static Object lookForNumberOfQniqueTerms=new Object();
+    private static LinkedList<String>[] entities;
 
     public IndexerMerging(File folder, int index, Path mergedFilesFolder, Path pathForDictionary) {
         this.folder = folder;
@@ -32,6 +35,10 @@ public class IndexerMerging implements Runnable {
     public static void initialazleVariable(){
         lookForNumberOfQniqueTerms=new Object();
         numberOfQniqueTerms=0;
+        entities = new LinkedList[472525];
+        for (int i=0; i < entities.length ; i++){
+            entities[i] = new LinkedList<>();
+        }
     }
     /**
      * merging the temporary files to posting files
@@ -73,8 +80,18 @@ public class IndexerMerging implements Runnable {
                         }
                     }
                     if( isEntity && mergedFile.get(key).size()<2 ){
-                        //   System.out.println(key+"="+mergedFile.get(key).size());
                         continue;
+                    }
+                    if(isEntity){
+
+                        String[] appearence = mergedFile.get(key).toString().split("[ \\,\\}\\{\\]\\[]+");
+                        for(String wordAppear : appearence ){
+                            if(wordAppear.contains("=")){
+                                int index = wordAppear.indexOf("=");
+                                int DocID = Integer.parseInt(wordAppear.substring(0,index));
+                                entities[DocID-1].add(key+"="+wordAppear.substring(index+1));
+                            }
+                        }
                     }
                 }
                 LinkedList<String> listOfTermAppearence;
@@ -150,13 +167,13 @@ public class IndexerMerging implements Runnable {
      * @param pathForDictionary - path for folder that contains all small dictionaries
      * @param pathForAllDictionaryWithFileName- path for new one big dictionary
      */
-    public static void summaryAllDictionaryWords(Path pathForDictionary , Path pathForAllDictionaryWithFileName){
+    public static void summaryAllDictionaryWords(Path pathForDictionary , Path pathForAllDictionaryWithFileName ,Path mergedFilesFolder){
 
         for(int i=0 ; i<27 ;i++){
-            FileInputStream fi;
+
             byte[] array = new byte[0];
             try {
-
+                FileInputStream fi;
                 File fileEntry = new File(pathForDictionary + "//dictionary-" + ((char) (i + 97)) + ".txt");
                 fi = new FileInputStream(fileEntry);
                 array = new byte[(int) fileEntry.length()];
@@ -173,7 +190,19 @@ public class IndexerMerging implements Runnable {
                 System.err.println(x);
             }
         }
-
+        StringBuilder entitiesString  = new StringBuilder();
+        for(int i=0 ; i < entities.length ; i++){
+            entitiesString.append((i+1)+"="+entities[i].toString()+"\n");
+        }
+        Path entitiesPath = Paths.get( mergedFilesFolder.toString()+"\\DocToEntities.txt");
+        byte data[] = entitiesString.toString().getBytes();
+        try (OutputStream out = new BufferedOutputStream(
+                Files.newOutputStream(entitiesPath , CREATE,APPEND))) {
+            out.write(data, 0, data.length);
+            out.flush();
+        } catch (IOException x) {
+            System.err.println(x);
+        }
 
     }
 

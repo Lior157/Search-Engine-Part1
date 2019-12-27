@@ -13,6 +13,7 @@ import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static java.nio.file.StandardOpenOption.APPEND;
 import static java.nio.file.StandardOpenOption.CREATE;
@@ -26,6 +27,7 @@ public class Indexer implements IndexerInterface{
     private int fileIteration ;
     private static volatile Object lookIncrease  = new Object();
     private static volatile Integer fileNumber = 1 ;
+    private static volatile AtomicLong allCorpusNumberOfwords = new AtomicLong(0);
     private ParseInterface parser;
     private  static volatile Path pathData ;
     private LinkedList<Pair<String,String>>[] AB_words;
@@ -39,6 +41,7 @@ public class Indexer implements IndexerInterface{
      * initialaze static variables
      */
     public static void initialazleVariable(){
+        allCorpusNumberOfwords.set(0);
         lookIncrease  = new Object();
         fileNumber = 1 ;
         lookWriteDocsInformationFile = new Object();
@@ -134,8 +137,8 @@ public class Indexer implements IndexerInterface{
                 }
             }
            // System.out.println(local_file_num + "=" + title.text() + "|" + date.text() + "|" + docno.text() + "|max_tf|" + max_tf + "|qw|" + mp.size());
-            fileMeta_data.add(local_file_num + "=" + title.text() + "|" + date.text() + "|" + docno.text() + "|max_tf|" + max_tf + "|qw|" + mp.size());
-         //   System.out.println("local add:"+local_file_num);
+            fileMeta_data.add(local_file_num + "=" + title.text() + "|" + date.text() + "|" + docno.text() + "|max_tf|" + max_tf + "|qw|" + mp.size()+"|DocLen|"+parser.getDocLength());
+            allCorpusNumberOfwords.addAndGet(parser.getDocLength());
             fileIteration++;
             //   System.out.println(fileIteration);
             ManageWritingInformation(local_file_num ,false);
@@ -173,11 +176,25 @@ public class Indexer implements IndexerInterface{
                 fileIteration = 0 ;
                 writeTemporaryPostingFile();
                 Voc = new HashMap<>();
-
-
             }
         }
 
+    /**
+     * Write Information About All Indexed Files after Running
+     * @param path where to write the file of information
+     */
+    public  static void WriteInformationAboutAllIndexedFiles(Path path){
+        Path p = Paths.get(path.toString() + "//@InformationAboutCorpus.txt" );
+        String data = (fileNumber-1) +"\n"+ allCorpusNumberOfwords.get();
+        byte dataToBytes[] = data.getBytes() ;
+        try (OutputStream out = new BufferedOutputStream(
+                Files.newOutputStream(p, CREATE))) {
+            out.write(dataToBytes, 0, dataToBytes.length);
+            out.flush();
+        } catch (IOException x) {
+            System.err.println(x);
+        }
+    }
     /**
      * merging and sorting all temporary folders to posting files
      * @param folder
@@ -211,7 +228,8 @@ public class Indexer implements IndexerInterface{
         while (!tpex.isTerminated()){
             Thread.yield();
         }
-        IndexerMerging.summaryAllDictionaryWords(pathForAllDictionary ,pathForAllDictionaryWithFileNmae);
+        IndexerMerging.summaryAllDictionaryWords(pathForAllDictionary ,pathForAllDictionaryWithFileNmae , mergedFilesFolder);
+        WriteInformationAboutAllIndexedFiles(mergedFilesFolder); // add 28.12
       //  System.out.println("finished");
     }
 
@@ -242,6 +260,7 @@ public class Indexer implements IndexerInterface{
             try (OutputStream out = new BufferedOutputStream(
                     Files.newOutputStream(pathForSaving, CREATE))) {
                 out.write(data, 0, data.length);
+                out.flush();
             } catch (IOException x) {
                 System.err.println(x);
             }
@@ -281,6 +300,7 @@ public class Indexer implements IndexerInterface{
                 ObjectOutputStream o = new ObjectOutputStream(f);
                 o.writeObject(AB_words[index]);
                 o.close();
+                f.close();
             }catch (Exception e){ }
 
            index++;
@@ -297,6 +317,7 @@ public class Indexer implements IndexerInterface{
             try (OutputStream out = new BufferedOutputStream(
                     Files.newOutputStream(p, CREATE, APPEND))) {
                 out.write(data, 0, data.length);
+                out.flush();
             } catch (IOException x) {
                 System.err.println(x);
             }

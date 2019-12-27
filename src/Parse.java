@@ -15,10 +15,14 @@ public class Parse implements ParseInterface{
     private int indexDoc ;
     private static volatile boolean stem;
     private HashSet<String> endsOrStarts;
+    private int DocLength;
 //    public static volatile AtomicInteger atomicInteger = new AtomicInteger();
 //    public static volatile HashSet<String> hsNumber = new HashSet();
 //    public static volatile Object look = new Object();
 
+    public int getDocLength(){
+        return DocLength;
+    }
     public Parse(String corpus){
         add_stopWords(corpus);
         endsOrStarts = new HashSet<String>(Arrays.asList("(", ")", ".","*","!","?",".",",",":",";","-","]","[",",","\"","'","[","]","{","}","@","#","^","&","_"));
@@ -29,7 +33,7 @@ public class Parse implements ParseInterface{
      * @return returns a list of terms after processing and activation of rules
      */
     public Map<String,Integer> parseIt(String text){
-
+        DocLength = 0;
         /*run on each file text - remove stop words ,parse it(and increases number of appearances), stems it , data analysis(the term with the most appearances,number of all terms,*/
         String[] str2 = text.split("[:\\s\\r?\\n]+");
         DATA = new HashMap<>();
@@ -49,13 +53,13 @@ public class Parse implements ParseInterface{
 
             str=IsRange(indexDoc);
             if(str!=null){  //checks if the word is under the Range rule
-                AddToData(str,false);
+                AddToData(str,false , false);
                 continue;
             }
 
             str=IsEntity(indexDoc);
             if(str!=null){   //checks if the word is an entity
-                AddToData(str,false);
+                AddToData(str,false , false);
                 continue;
             }
             this.text.set(indexDoc,CleanWord(getFromText(indexDoc)));  //cleans the word from start and end
@@ -63,24 +67,24 @@ public class Parse implements ParseInterface{
                 continue;
             str=isBetween(indexDoc);
             if(str!=null){
-                AddToData(str,false);
+                AddToData(str,false , false);
                 continue;
             }
             str=IsDate(indexDoc);
             if(str!=null){  //checks if the word is a date
-                AddToData(str,true);
+                AddToData(str,true ,false);
                 continue;
             }
             if(checkIfTermHasConnectionToNumber(indexDoc)!=null){
                 str=getNumber(indexDoc);
                 if(str == null)  //checks if the word is a number
                     continue;
-                AddToData(str,true);
+                AddToData(str,true ,false);
                 continue;
             }
             if(stopWords.contains(getFromText(indexDoc))||stopWords.contains(getFromText(indexDoc).toLowerCase())||stopWords.contains(getFromText(indexDoc).substring(0,1).toUpperCase()+getFromText(indexDoc).toLowerCase().substring(1))) //checks if the word is a Stop Word
                 continue;
-                AddToData(getFromText(indexDoc),false);
+                AddToData(getFromText(indexDoc),false,false);
         }
       //  System.out.println(DATA);
         return DATA;
@@ -99,7 +103,7 @@ public class Parse implements ParseInterface{
             return word;
         }
         else
-            AddToData(word,true);
+            AddToData(word,true ,false);
         return "";
 
     }
@@ -180,12 +184,13 @@ public class Parse implements ParseInterface{
      * @param number Check if the term is a number for a special case of adding
      * This function adds the term after processing to the map that gets sent to the Indexer
      */
-    private void AddToData(String word,boolean number){
+    private void AddToData(String word,boolean number,boolean isEntity){
         if(stem)
             word=StemWord(word);
         if(word.equals(" ")|| word.length()==0){
             return;
         }
+        if(! isEntity) DocLength++;
         if(number) {
             if (DATA.get(word) != null)
                 DATA.put(word, DATA.get(word) + 1);
@@ -258,7 +263,7 @@ public class Parse implements ParseInterface{
             if(endsOrStarts.contains(String.valueOf(entity.charAt(entity.length()-1))))
                 return null;
             else if(!stopWords.contains(word)&&!stopWords.contains(word.toLowerCase())&&!stopWords.contains(word.substring(0,1).toUpperCase()+word.toLowerCase().substring(1))) //checks if the word is a Stop Word
-                AddToData(entity,false);
+                AddToData(entity,false , true);
         }
         else
             return null;
@@ -272,12 +277,12 @@ public class Parse implements ParseInterface{
                 entity=CleanWord(entity);
                 word=CleanWord(word);
                 if(!stopWords.contains(word)&&!stopWords.contains(word.toLowerCase())&&!stopWords.contains(word.substring(0,1).toUpperCase()+word.toLowerCase().substring(1))) //checks if the word is a Stop Word
-                    AddToData(word,false);
+                    AddToData(word,false , true);
                 this.indexDoc+=size-1;
                 return entity;
             }
             if(!stopWords.contains(word)&&!stopWords.contains(word.toLowerCase())&&!stopWords.contains(word.substring(0,1).toUpperCase()+word.toLowerCase().substring(1))) //checks if the word is a Stop Word
-                AddToData(word,false);
+                AddToData(word,false ,true);
         }
         if(size==1)
             return null;
@@ -302,7 +307,7 @@ public class Parse implements ParseInterface{
                 if(word.length()<1)
                     continue;
                 if(!stopWords.contains(word)&&!stopWords.contains(word.toLowerCase())&&!stopWords.contains(word.substring(0,1).toUpperCase()+word.toLowerCase().substring(1))) //checks if the word is a Stop Word
-                AddToData(word,false);
+                AddToData(word,false ,false);
             }
             return CleanWord(getFromText(indexDoc));
         }
@@ -314,9 +319,9 @@ public class Parse implements ParseInterface{
             if(checkIfTermHasConnectionToNumber(indexDoc+1)!=null)
                 ans2=getNumber(indexDoc+1);
             if(!stopWords.contains(words[0])&&!stopWords.contains(words[0].toLowerCase())&&!stopWords.contains(words[0].substring(0,1).toUpperCase()+words[0].toLowerCase().substring(1))) //checks if the word is a Stop Word
-            AddToData(words[0],false);
+            AddToData(words[0],false,false);
             if(!stopWords.contains(words[1])&&!stopWords.contains(words[1].toLowerCase())&&!stopWords.contains(words[1].substring(0,1).toUpperCase()+words[1].toLowerCase().substring(1))) //checks if the word is a Stop Word
-            AddToData(words[1],false);
+            AddToData(words[1],false , false);
             return ans1+"-"+ans2;
         }
         else
